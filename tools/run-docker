@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+docker_tag="$(cat build-docker | grep "docker_tag=" | cut -d "=" -f 2)"
+
+export $(grep -v '^#' .env | xargs)
+docker run \
+    -p $server_port:$server_port \
+    -t $docker_tag

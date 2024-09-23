@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+docker_tag=insta-archiver:latest
+
+docker build \
+    -f ./deployments/Dockerfile \
+    . -t $docker_tag
