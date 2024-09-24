@@ -100,6 +100,24 @@ span {
     gap: 16px;
 }
 
+.divider {
+    width: 100%;
+    height: 1px;
+    background-color: var(--border);
+}
+
+.gallery {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: start;
+    gap: 5px;
+}
+
+.gallery>img {
+    width: 33%;
+}
+
 @media screen and (max-width: 1366px) {
     main {
         margin-left: 0;
