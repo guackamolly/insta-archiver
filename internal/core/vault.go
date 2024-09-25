@@ -1,8 +1,11 @@
 package core
 
-import "github.com/guackamolly/insta-archiver/internal/data/user"
+import "github.com/guackamolly/insta-archiver/internal/domain"
 
 // Main application DI container.
 type Vault struct {
-	UserRepository user.UserRepository
+	DownloadUserStories domain.DownloadUserStories
+	GetLatestStories    domain.GetLatestStories
+	ArchiveUserStories  domain.ArchiveUserStories
+	PurifyUsername      domain.PurifyUsername
 }
