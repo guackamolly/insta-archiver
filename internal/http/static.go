@@ -26,6 +26,12 @@ var (
 	templates = []string{
 		serverPublicRoot + "archive/index.html",
 	}
+
+	errors = map[int]string{
+		404: serverPublicRoot + "404/index.html",
+	}
+
+	root = files["/index.html"]
 )
 
 func RegisterStaticFiles(e *echo.Echo) error {
