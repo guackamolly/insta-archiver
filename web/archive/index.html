@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Instagram Archiver - @cristiano</title>
+        <title>Instagram Archiver - @{{.username}}</title>
         <meta charset='utf-8'>
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -23,21 +23,25 @@
 
         <main>
             <div class="main-content-1">
-                <h1>Archive for @cristiano</h1>
+                <h1>Archive for @{{.username}}</h1>
+                {{if .description}}
                 <span>
-                    Cristiano Ronaldo
-                    SIUUUbscribe to my Youtube Channel!
+                    {{.description}}
                 </span>
+                {{end}}
                 <span>
-                    Archived Stories: <b>43</b>
+                    Archived Stories: <b>{{.archivedStoriesCount}}</b>
                     |
-                    Last (24h) Stories: <b>1</b>
+                    Last (24h) Stories: <b>{{.lastStoriesCount}}</b>
                 </span>
                 <img
                     style="position: absolute; right: 22%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; width: 6%;"
                     src="/static/test.png" />
                 <div class="divider"></div>
                 <section class="gallery">
+                    {{range $element := .stories}}
+                    <img src="{{$element.ThumbnailUrl}}" />
+                    {{end}}
                     <img src="/static/story-test.jpeg" />
                     <img src="/static/story-1.jpg" />
                     <img src="/static/story-2.jpg" />
