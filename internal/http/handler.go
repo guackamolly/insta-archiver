@@ -3,8 +3,7 @@ package http
 import (
 	"net/http"
 
-	_http "github.com/guackamolly/insta-archiver/internal/data/client/http"
-	"github.com/guackamolly/insta-archiver/internal/data/user"
+	"github.com/guackamolly/insta-archiver/internal/core"
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,20 +14,19 @@ func RegisterHandlers(e *echo.Echo) {
 }
 
 func archiveRouteHandler(ectx echo.Context) error {
-	r := user.ViewIGStoryUserRepository{
-		Client: _http.Native(),
-	}
+	return withVault(ectx, func(v core.Vault) error {
+		r := v.UserRepository
 
-	ap := ectx.QueryParam(archiveQueryParam)
+		ap := ectx.QueryParam(archiveQueryParam)
+		res, _ := r.Stories(ap)
 
-	res, _ := r.Stories(ap)
-
-	return ectx.Render(http.StatusOK, "index.html", map[string]any{
-		"username":             ap,
-		"description":          "I love Messi. SIUUUUUUU",
-		"archivedStoriesCount": len(res),
-		"lastStoriesCount":     len(res),
-		"stories":              res,
+		return ectx.Render(http.StatusOK, "index.html", map[string]any{
+			"username":             ap,
+			"description":          "I love Messi. SIUUUUUUU",
+			"archivedStoriesCount": len(res),
+			"lastStoriesCount":     len(res),
+			"stories":              res,
+		})
 	})
 }
 

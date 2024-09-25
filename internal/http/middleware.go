@@ -3,11 +3,25 @@ package http
 import (
 	"fmt"
 
+	"github.com/guackamolly/insta-archiver/internal/core"
 	"github.com/labstack/echo/v4"
 )
 
-func RegisterMiddlewares(e *echo.Echo) {
+const vaultKey = "vault"
+
+func RegisterMiddlewares(e *echo.Echo, vault core.Vault) {
 	e.Use(loggingMiddleware())
+	e.Use(vaultMiddleware(vault))
+}
+
+func vaultMiddleware(vault core.Vault) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(ectx echo.Context) error {
+			ectx.Set(vaultKey, vault)
+
+			return next(ectx)
+		}
+	}
 }
 
 func loggingMiddleware() echo.MiddlewareFunc {
@@ -19,4 +33,14 @@ func loggingMiddleware() echo.MiddlewareFunc {
 			return next(ectx)
 		}
 	}
+}
+
+func withVault(ectx echo.Context, with func(core.Vault) error) error {
+	v, ok := ectx.Get(vaultKey).(core.Vault)
+
+	if ok {
+		return with(v)
+	}
+
+	return echo.ErrFailedDependency
 }
