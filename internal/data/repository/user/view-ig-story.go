@@ -9,14 +9,14 @@ import (
 
 // Implements [UserRepository] using [ViewIGStory](https://viewigstory.com) API.
 type ViewIGStoryUserRepository struct {
-	Client http.HttpClient
+	client http.HttpClient
 }
 
-func (r ViewIGStoryUserRepository) Stories(uid string) ([]model.Story, error) {
-	var res []model.Story
+func (r ViewIGStoryUserRepository) Stories(uid string) ([]model.CloudStory, error) {
+	var res []model.CloudStory
 
 	u := fmt.Sprintf("https://viewigstory.com/api/stories/%s", uid)
-	resp, err := r.Client.Do(
+	resp, err := r.client.Do(
 		http.PostHttpRequest(
 			u,
 			nil,
@@ -36,12 +36,13 @@ func (r ViewIGStoryUserRepository) Stories(uid string) ([]model.Story, error) {
 		return res, err
 	}
 
-	res = make([]model.Story, len(stories.LastStories))
+	res = make([]model.CloudStory, len(stories.LastStories))
 	for i, v := range stories.LastStories {
-		res[i] = model.Story{
-			Id:           v.CreatedTime,
-			ThumbnailUrl: fmt.Sprintf("https://viewigstory.com/proxy/%s", v.ThumbnailURL),
-			Url:          fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
+		res[i] = model.CloudStory{
+			Username:  uid,
+			Id:        v.CreatedTime,
+			Thumbnail: fmt.Sprintf("https://viewigstory.com/proxy/%s", v.ThumbnailURL),
+			Media:     fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
 		}
 	}
 
