@@ -1,7 +1,10 @@
 package http
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 )
 
 type nativeHttpClient struct {
@@ -38,4 +41,25 @@ func (c nativeHttpClient) Do(req HttpRequest) (HttpResponse, error) {
 	}
 
 	return resp, err
+}
+
+func (c nativeHttpClient) Download(req HttpRequest) (*os.File, error) {
+	resp, err := c.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Nok() {
+		return nil, fmt.Errorf("download failed:\nurl: %s\nstatus: %d", req.QueryURL(), resp.StatusCode)
+	}
+
+	f, err := os.CreateTemp("", "*")
+
+	if err == nil {
+		defer resp.Body.read.Close()
+		_, err = io.Copy(f, resp.Body.read)
+	}
+
+	return f, err
 }

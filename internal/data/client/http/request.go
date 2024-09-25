@@ -21,6 +21,31 @@ type HttpRequest struct {
 	Query     QueryParameters
 }
 
+// Creates an [HttpRequest] suitable for GET requests.
+func GetHttpRequest(
+	url string,
+	headers *Headers,
+	queryParams *QueryParameters,
+) HttpRequest {
+	hds := headers
+	qps := queryParams
+
+	if hds == nil {
+		hds = &Headers{}
+	}
+
+	if qps == nil {
+		qps = &QueryParameters{}
+	}
+
+	return HttpRequest{
+		Verb:    "GET",
+		URL:     url,
+		Headers: *hds,
+		Query:   *qps,
+	}
+}
+
 // Creates an [HttpRequest] suitable for POST requests.
 func PostHttpRequest(
 	url string,
