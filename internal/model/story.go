@@ -1,6 +1,7 @@
 package model
 
 type Story struct {
-	Id  string
-	Url string
+	Id           string
+	ThumbnailUrl string
+	Url          string
 }

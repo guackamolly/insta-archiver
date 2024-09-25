@@ -39,8 +39,9 @@ func (r ViewIGStoryUserRepository) Stories(uid string) ([]model.Story, error) {
 	res = make([]model.Story, len(stories.LastStories))
 	for i, v := range stories.LastStories {
 		res[i] = model.Story{
-			Id:  v.CreatedTime,
-			Url: fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
+			Id:           v.CreatedTime,
+			ThumbnailUrl: fmt.Sprintf("https://viewigstory.com/proxy/%s", v.ThumbnailURL),
+			Url:          fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
 		}
 	}
 
