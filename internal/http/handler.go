@@ -10,7 +10,7 @@ import (
 func RegisterHandlers(e *echo.Echo) {
 	e.Any(rootRoute, anyRouteHandler)
 	e.GET(archiveRoute, archiveRouteHandler)
-	echo.NotFoundHandler = useNotFoundHandler()
+	e.HTTPErrorHandler = httpErrorHandler()
 }
 
 func archiveRouteHandler(ectx echo.Context) error {
@@ -32,8 +32,23 @@ func anyRouteHandler(ectx echo.Context) error {
 	}
 }
 
-func useNotFoundHandler() func(c echo.Context) error {
-	return func(c echo.Context) error {
-		return c.File(errors[404])
+func httpErrorHandler() func(err error, c echo.Context) {
+	return func(err error, c echo.Context) {
+		he, ok := err.(*echo.HTTPError)
+
+		// If cast fails, serve fallback
+		if !ok {
+			c.File(fallback)
+			return
+		}
+
+		// if error page available, serve it
+		if f, ok := errors[he.Code]; !ok {
+			c.File(f)
+			return
+		}
+
+		// If all checks fail, serve fallback
+		c.File(fallback)
 	}
 }

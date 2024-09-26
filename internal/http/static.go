@@ -32,7 +32,8 @@ var (
 		404: serverPublicRoot + "404/index.html",
 	}
 
-	root = files["/index.html"]
+	root     = files["/index.html"]
+	fallback = root
 )
 
 func RegisterStaticFiles(e *echo.Echo) error {
