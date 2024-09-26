@@ -15,18 +15,10 @@ func RegisterHandlers(e *echo.Echo) {
 
 func archiveRouteHandler(ectx echo.Context) error {
 	return withVault(ectx, func(v core.Vault) error {
-		r := v.UserRepository
+		un := ectx.QueryParam(archiveQueryParam)
+		resp := onArchiveUserStories(ectx, v, un)
 
-		ap := ectx.QueryParam(archiveQueryParam)
-		res, _ := r.Stories(ap)
-
-		return ectx.Render(http.StatusOK, "index.html", map[string]any{
-			"username":             ap,
-			"description":          "I love Messi. SIUUUUUUU",
-			"archivedStoriesCount": len(res),
-			"lastStoriesCount":     len(res),
-			"stories":              res,
-		})
+		return ectx.Render(http.StatusOK, "index.html", resp)
 	})
 }
 
