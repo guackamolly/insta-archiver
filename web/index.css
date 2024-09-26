@@ -111,7 +111,8 @@ span {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: start;
+    justify-content: center;
+    width: 100%;
     gap: 5px;
 }
 
