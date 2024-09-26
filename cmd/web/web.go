@@ -4,6 +4,7 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/core"
 	client "github.com/guackamolly/insta-archiver/internal/data/client/http"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
+	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
 	"github.com/guackamolly/insta-archiver/internal/data/storage"
 	"github.com/guackamolly/insta-archiver/internal/domain"
@@ -32,6 +33,9 @@ func main() {
 	http.RegisterStaticFiles(e)
 	http.RegisterTemplates(e)
 
+	// Call beforeStart hook
+	http.BeforeStart(e, vault)
+
 	// Start!
 	e.Logger.Fatal(http.Start(e))
 }
@@ -44,7 +48,7 @@ func createVault(
 
 	client := client.Native()
 	fstorage, err := storage.NewFileSystemStorage(physicalContentDir)
-	mstorage := storage.NewMemoryStorage[string, model.ArchivedUserView]()
+	mstorage := storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]()
 
 	if err != nil {
 		return vault, err
@@ -52,6 +56,7 @@ func createVault(
 
 	archiveRepo := archive.NewFileSystemArchiveRepository(fstorage)
 	userRepo := user.NewViewIGStoryUserRepository(client)
+	cacheRepo := cache.NewFileSystemMemoryCacheRepository(fstorage, mstorage)
 
 	vault = core.Vault{
 		PurifyCloudStories:        domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
@@ -59,8 +64,9 @@ func createVault(
 		DownloadUserStories:       domain.NewDownloadUserStories(client),
 		GetLatestStories:          domain.NewGetLatestStories(userRepo),
 		ArchiveUserStories:        domain.NewArchiveUserStories(archiveRepo),
-		CacheArchivedUserView:     domain.NewCacheArchivedUserView(mstorage),
-		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(mstorage),
+		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(cacheRepo),
+		CacheArchivedUserView:     domain.NewCacheArchivedUserView(cacheRepo),
+		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(cacheRepo),
 	}
 
 	return vault, nil
