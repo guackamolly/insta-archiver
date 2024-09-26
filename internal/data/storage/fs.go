@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -89,6 +90,21 @@ func (s *FileSystemStorage) Lookup(i string) ([]File, error) {
 	return fs, err
 }
 
+func (s *FileSystemStorage) LookupFile(i string) (File, error) {
+	var f File
+
+	p := filepath.Join(s.Root, i)
+	dp := filepath.Dir(p)
+
+	finfo, err := os.Stat(p)
+
+	if err == nil {
+		f = s.fileInfoToFile(dp, finfo)
+	}
+
+	return f, err
+}
+
 func (s *FileSystemStorage) Store(i string, fs []File) ([]File, error) {
 	_, p, err := s.dirInfo(i)
 
@@ -117,6 +133,21 @@ func (s *FileSystemStorage) Store(i string, fs []File) ([]File, error) {
 	}
 
 	return nfs, err
+}
+
+func (s *FileSystemStorage) StoreRaw(path string, bs []byte) (File, error) {
+	// call [dirInfo] to create file dp, if it hasn't been created already
+	dp := filepath.Dir(path)
+	s.dirInfo(dp)
+
+	p := s.Root + path
+	err := os.WriteFile(p, bs, os.ModePerm)
+
+	return File{
+		Path:           p,
+		ModifyDateTime: time.Now(),
+		IsDir:          false,
+	}, err
 }
 
 func (s *FileSystemStorage) Delete(i string) error {
