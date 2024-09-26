@@ -30,6 +30,16 @@ func NewArchiveUserStories(
 	}
 }
 
+func NewPurifyCloudStories(
+	physicalContentDir,
+	virtualContentDir string,
+) PurifyCloudStories {
+	return PurifyCloudStories{
+		physicalContentDir: physicalContentDir,
+		virtualContentDir:  virtualContentDir,
+	}
+}
+
 func NewPurifyUsername() PurifyUsername {
 	return PurifyUsername{}
 }
