@@ -20,7 +20,8 @@ var (
 	}
 
 	dirs = map[string]string{
-		"/static": serverPublicRoot + "static/",
+		"/static":  serverPublicRoot + "static/",
+		"/content": serverPublicRoot + "content/",
 	}
 
 	templates = []string{
@@ -44,4 +45,14 @@ func RegisterStaticFiles(e *echo.Echo) error {
 	}
 
 	return nil
+}
+
+// Returns a tuples that identifies:
+// [0] - Content directory that is accessible through the file system (physical)
+// [1] - Content directory that is accessible through the network (virtual)
+func ContentDir() [2]string {
+	return [2]string{
+		dirs["/content"],
+		"/content",
+	}
 }
