@@ -3,8 +3,8 @@ package domain
 import (
 	"github.com/guackamolly/insta-archiver/internal/data/client/http"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
+	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
-	"github.com/guackamolly/insta-archiver/internal/data/storage"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
@@ -46,18 +46,26 @@ func NewPurifyUsername() PurifyUsername {
 	return PurifyUsername{}
 }
 
+func NewLoadCacheArchivedUserView(
+	repository cache.CacheRepository[string, model.ArchivedUserView],
+) LoadCacheArchivedUserView {
+	return LoadCacheArchivedUserView{
+		repository: repository,
+	}
+}
+
 func NewCacheArchivedUserView(
-	storage *storage.MemoryStorage[string, model.ArchivedUserView],
+	repository cache.CacheRepository[string, model.ArchivedUserView],
 ) CacheArchivedUserView {
 	return CacheArchivedUserView{
-		storage: storage,
+		repository: repository,
 	}
 }
 
 func NewGetCachedArchivedUserView(
-	storage *storage.MemoryStorage[string, model.ArchivedUserView],
+	repository cache.CacheRepository[string, model.ArchivedUserView],
 ) GetCachedArchivedUserView {
 	return GetCachedArchivedUserView{
-		storage: storage,
+		repository: repository,
 	}
 }

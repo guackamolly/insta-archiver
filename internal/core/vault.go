@@ -9,6 +9,7 @@ type Vault struct {
 	ArchiveUserStories        domain.ArchiveUserStories
 	PurifyCloudStories        domain.PurifyCloudStories
 	PurifyUsername            domain.PurifyUsername
+	LoadCacheArchivedUserView domain.LoadCacheArchivedUserView
 	CacheArchivedUserView     domain.CacheArchivedUserView
 	GetCachedArchivedUserView domain.GetCachedArchivedUserView
 }
