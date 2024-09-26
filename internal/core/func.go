@@ -6,7 +6,7 @@ import "github.com/guackamolly/insta-archiver/internal/domain"
 func Process[I any, O any](
 	input I,
 	action func(I) (O, error),
-	onError func(error) error,
+	onError func(error),
 ) O {
 	output, err := action(input)
 
@@ -22,7 +22,7 @@ func Process[I any, O any](
 func Invoke[I any, O any](
 	input I,
 	usecase domain.Usecase[I, O],
-	onError func(error) error,
+	onError func(error),
 ) O {
 	return Process(input, usecase.Invoke, onError)
 }
