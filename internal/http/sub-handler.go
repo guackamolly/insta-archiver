@@ -1,6 +1,8 @@
 package http
 
 import (
+	"fmt"
+
 	"github.com/guackamolly/insta-archiver/internal/core"
 	"github.com/guackamolly/insta-archiver/internal/model"
 	"github.com/labstack/echo/v4"
@@ -11,13 +13,14 @@ func onArchiveUserStories(
 	vault core.Vault,
 	username string,
 ) model.ArchivedUserView {
-	onError := func(err error) error { return onError(ectx, err) }
+	onError := ectx.Error
 
 	pun := core.Invoke(username, vault.PurifyUsername, onError)
 	view := core.Invoke(pun, vault.GetCachedArchivedUserView, onError)
 
 	// If cached, return immediately
 	if view != nil {
+		fmt.Printf("user %s is cached, returning cached view\n", pun)
 		return *view
 	}
 
@@ -26,17 +29,16 @@ func onArchiveUserStories(
 	cs = core.Invoke(fs, vault.ArchiveUserStories, onError)
 	cs = core.Invoke(cs, vault.PurifyCloudStories, onError)
 
-	// cache view on return
-	return core.Invoke(
-		model.NewArchivedUserView(pun, "Something along these lines", cs),
-		vault.CacheArchivedUserView,
-		onError,
-	)
-}
+	v := model.NewArchivedUserView(pun, "Something along these lines", cs)
 
-func onError(
-	ectx echo.Context,
-	err error,
-) error {
-	return ectx.String(400, err.Error())
+	core.Invoke(
+		v,
+		vault.CacheArchivedUserView,
+		func(err error) {
+			// if cache fails, we can still rely on memory value
+			ectx.Logger().Error(err)
+		},
+	)
+
+	return v
 }
