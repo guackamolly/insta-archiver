@@ -4,6 +4,8 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/data/client/http"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
+	"github.com/guackamolly/insta-archiver/internal/data/storage"
+	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
 func NewGetLatestStories(
@@ -42,4 +44,20 @@ func NewPurifyCloudStories(
 
 func NewPurifyUsername() PurifyUsername {
 	return PurifyUsername{}
+}
+
+func NewCacheArchivedUserView(
+	storage *storage.MemoryStorage[string, model.ArchivedUserView],
+) CacheArchivedUserView {
+	return CacheArchivedUserView{
+		storage: storage,
+	}
+}
+
+func NewGetCachedArchivedUserView(
+	storage *storage.MemoryStorage[string, model.ArchivedUserView],
+) GetCachedArchivedUserView {
+	return GetCachedArchivedUserView{
+		storage: storage,
+	}
 }

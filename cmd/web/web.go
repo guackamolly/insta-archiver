@@ -8,6 +8,7 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/data/storage"
 	"github.com/guackamolly/insta-archiver/internal/domain"
 	"github.com/guackamolly/insta-archiver/internal/http"
+	"github.com/guackamolly/insta-archiver/internal/model"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 )
@@ -43,6 +44,7 @@ func createVault(
 
 	client := client.Native()
 	fstorage, err := storage.NewFileSystemStorage(physicalContentDir)
+	mstorage := storage.NewMemoryStorage[string, model.ArchivedUserView]()
 
 	if err != nil {
 		return vault, err
@@ -52,11 +54,13 @@ func createVault(
 	userRepo := user.NewViewIGStoryUserRepository(client)
 
 	vault = core.Vault{
-		PurifyCloudStories:  domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
-		PurifyUsername:      domain.NewPurifyUsername(),
-		DownloadUserStories: domain.NewDownloadUserStories(client),
-		GetLatestStories:    domain.NewGetLatestStories(userRepo),
-		ArchiveUserStories:  domain.NewArchiveUserStories(archiveRepo),
+		PurifyCloudStories:    domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
+		PurifyUsername:        domain.NewPurifyUsername(),
+		DownloadUserStories:   domain.NewDownloadUserStories(client),
+		GetLatestStories:      domain.NewGetLatestStories(userRepo),
+		ArchiveUserStories:    domain.NewArchiveUserStories(archiveRepo),
+		CacheArchivedUserView: domain.NewCacheArchivedUserView(mstorage),
+		IsUserCached:          domain.NewIsUserCached(mstorage),
 	}
 
 	return vault, nil
