@@ -18,7 +18,8 @@ func main() {
 	defer e.Close()
 
 	// Initialize di container
-	vault, err := createVault()
+	contentDir := http.ContentDir()
+	vault, err := createVault(contentDir[0], contentDir[1])
 
 	if err != nil {
 		e.Logger.Fatal(err)
@@ -34,11 +35,14 @@ func main() {
 	e.Logger.Fatal(http.Start(e))
 }
 
-func createVault() (core.Vault, error) {
+func createVault(
+	physicalContentDir,
+	virtualContentDir string,
+) (core.Vault, error) {
 	var vault core.Vault
 
 	client := client.Native()
-	fstorage, err := storage.NewFileSystemStorage("static/")
+	fstorage, err := storage.NewFileSystemStorage(physicalContentDir)
 
 	if err != nil {
 		return vault, err
@@ -48,6 +52,7 @@ func createVault() (core.Vault, error) {
 	userRepo := user.NewViewIGStoryUserRepository(client)
 
 	vault = core.Vault{
+		PurifyCloudStories:  domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
 		PurifyUsername:      domain.NewPurifyUsername(),
 		DownloadUserStories: domain.NewDownloadUserStories(client),
 		GetLatestStories:    domain.NewGetLatestStories(userRepo),
