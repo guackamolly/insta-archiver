@@ -1,14 +1,19 @@
 package model
 
-import "github.com/guackamolly/insta-archiver/internal/data/storage"
+import (
+	"time"
+
+	"github.com/guackamolly/insta-archiver/internal/data/storage"
+)
 
 // Central model of the application. Defines the required data for an Instagram Story.
 // Typed so it's possible to differentiate a story accessible by clients (string) or accessible in the host machine (os.File)
 type Story[T any] struct {
-	Id        string
-	Username  string
-	Thumbnail T
-	Media     T
+	Id          string
+	Username    string
+	PublishedOn time.Time
+	Thumbnail   T
+	Media       T
 }
 
 // A story model that can be used for client responses.
