@@ -16,6 +16,22 @@ type Story[T any] struct {
 	Media       T
 }
 
+func NewStory[T any](
+	id,
+	username string,
+	publishedOn time.Time,
+	thumbnail T,
+	media T,
+) Story[T] {
+	return Story[T]{
+		Id:          id,
+		Username:    username,
+		PublishedOn: publishedOn,
+		Thumbnail:   thumbnail,
+		Media:       media,
+	}
+}
+
 // A story model that can be used for client responses.
 type CloudStory = Story[string]
 

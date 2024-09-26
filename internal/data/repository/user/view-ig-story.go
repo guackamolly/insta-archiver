@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/guackamolly/insta-archiver/internal/data/client/http"
 	"github.com/guackamolly/insta-archiver/internal/model"
@@ -12,10 +13,10 @@ type ViewIGStoryUserRepository struct {
 	client http.HttpClient
 }
 
-func (r ViewIGStoryUserRepository) Stories(uid string) ([]model.CloudStory, error) {
+func (r ViewIGStoryUserRepository) Stories(username string) ([]model.CloudStory, error) {
 	var res []model.CloudStory
 
-	u := fmt.Sprintf("https://viewigstory.com/api/stories/%s", uid)
+	u := fmt.Sprintf("https://viewigstory.com/api/stories/%s", username)
 	resp, err := r.client.Do(
 		http.PostHttpRequest(
 			u,
@@ -38,12 +39,19 @@ func (r ViewIGStoryUserRepository) Stories(uid string) ([]model.CloudStory, erro
 
 	res = make([]model.CloudStory, len(stories.LastStories))
 	for i, v := range stories.LastStories {
-		res[i] = model.CloudStory{
-			Username:  uid,
-			Id:        v.CreatedTime,
-			Thumbnail: fmt.Sprintf("https://viewigstory.com/proxy/%s", v.ThumbnailURL),
-			Media:     fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
+		pdt, err := time.Parse(time.DateOnly, v.CreatedTime)
+
+		if err != nil {
+			pdt = time.Now()
 		}
+
+		res[i] = model.NewStory(
+			v.CreatedTime,
+			username,
+			pdt,
+			fmt.Sprintf("https://viewigstory.com/proxy/%s", v.ThumbnailURL),
+			fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
+		)
 	}
 
 	return res, err

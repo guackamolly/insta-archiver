@@ -25,12 +25,7 @@ func (u DownloadUserStories) Invoke(stories []model.CloudStory) ([]model.FileSto
 			return nil, merr
 		}
 
-		fs[i] = model.FileStory{
-			Id:        v.Id,
-			Username:  v.Username,
-			Thumbnail: *t,
-			Media:     *m,
-		}
+		fs[i] = model.NewStory(v.Id, v.Username, v.PublishedOn, *t, *m)
 	}
 
 	return fs, nil

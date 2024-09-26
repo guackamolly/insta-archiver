@@ -20,12 +20,13 @@ func (r FileSystemArchiveRepository) Archive(stories ...model.FileStory) ([]mode
 			return cs, err
 		}
 
-		cs[i] = model.CloudStory{
-			Id:        v.Id,
-			Username:  v.Username,
-			Thumbnail: fs[0].Path,
-			Media:     fs[1].Path,
-		}
+		cs[i] = model.NewStory(
+			v.Id,
+			v.Username,
+			v.PublishedOn,
+			fs[0].Path,
+			fs[1].Path,
+		)
 	}
 
 	return cs, nil
