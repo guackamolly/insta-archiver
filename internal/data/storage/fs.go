@@ -98,12 +98,14 @@ func (s *FileSystemStorage) Store(i string, fs []File) ([]File, error) {
 
 	nfs := make([]File, len(fs))
 	for i, f := range fs {
+		np := path.Join(p, f.Name())
 		err = Move(f.Path, path.Join(p, f.Name()))
 
 		if err != nil {
 			return nil, err
 		}
 
+		f.Path = np
 		nfs[i] = f
 	}
 
