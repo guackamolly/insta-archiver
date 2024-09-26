@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Instagram Archiver - @{{.username}}</title>
+        <title>Instagram Archiver - @{{.Username}}</title>
         <meta charset='utf-8'>
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -24,42 +24,42 @@
 
         <main>
             <div class="main-content-1">
-                <h1>Archive for @{{.username}}</h1>
-                {{if .description}}
+                <h1>Archive for @{{.Username}}</h1>
+                {{if .Description}}
                 <span>
-                    {{.description}}
+                    {{.Description}}
                 </span>
                 {{end}}
                 <span>
-                    Archived Stories: <b>{{.archivedStoriesCount}}</b>
+                    Archived Stories: <b>{{len .ArchivedStories}}</b>
                     |
-                    Last (24h) Stories: <b>{{.lastStoriesCount}}</b>
+                    Last (24h) Stories: <b>{{len .LastStories}}</b>
                 </span>
                 <img
                     style="position: absolute; right: 22%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; width: 6%;"
                     src="/static/test.png" />
+                {{if gt (len .LastStories) 0}}
                 <div class="divider"></div>
                 <section class="gallery">
-                    {{range $element := .stories}}
-                    <img src="{{$element.ThumbnailUrl}}" />
+                    {{range $story := .LastStories}}
+                    <a href="{{$story.Media}}">
+                        <img src="{{$story.Thumbnail}}" />
+                    </a>
                     {{end}}
-                    <img src="/static/story-test.jpeg" />
-                    <img src="/static/story-1.jpg" />
-                    <img src="/static/story-2.jpg" />
-                    <img src="/static/story-3.jpg" />
-                    <img src="/static/story-15.jpg" />
-                    <img src="/static/story-18.jpg" />
                 </section>
-                <div class="divider"></div>
-                <h2>2024-09-23</h2>
-                <div class="divider"></div>
+                {{end}}
 
+                {{range $date, $stories := .ArchivedStories}}
+                <div class="divider"></div>
+                <h2>{{$date}}</h2>
+                <div class="divider"></div>
                 <section class="gallery">
-                    <img src="/static/story-test.jpeg" />
-                    <img src="/static/story-1.jpg" />
-                    <img src="/static/story-2.jpg" />
-                    <img src="/static/story-3.jpg" />
-                </div>
-            </main>
-        </body>
-    </html>
+                    {{range $story := $stories}}
+                    <img src="{{$story.Thumbnail}}" />
+                    {{end}}
+                </section>
+                {{end}}
+            </div>
+        </main>
+    </body>
+</html>
