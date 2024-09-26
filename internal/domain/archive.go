@@ -9,6 +9,6 @@ type ArchiveUserStories struct {
 	repository archive.ArchiveRepository
 }
 
-func (u ArchiveUserStories) Invoke(stories ...model.FileStory) ([]model.CloudStory, error) {
+func (u ArchiveUserStories) Invoke(stories []model.FileStory) ([]model.CloudStory, error) {
 	return u.repository.Archive(stories...)
 }

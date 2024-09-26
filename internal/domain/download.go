@@ -10,7 +10,7 @@ type DownloadUserStories struct {
 	client http.HttpClient
 }
 
-func (u DownloadUserStories) Invoke(stories ...model.CloudStory) ([]model.FileStory, error) {
+func (u DownloadUserStories) Invoke(stories []model.CloudStory) ([]model.FileStory, error) {
 	fs := make([]model.FileStory, len(stories))
 
 	for i, v := range stories {
