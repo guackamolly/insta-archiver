@@ -54,13 +54,13 @@ func createVault(
 	userRepo := user.NewViewIGStoryUserRepository(client)
 
 	vault = core.Vault{
-		PurifyCloudStories:    domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
-		PurifyUsername:        domain.NewPurifyUsername(),
-		DownloadUserStories:   domain.NewDownloadUserStories(client),
-		GetLatestStories:      domain.NewGetLatestStories(userRepo),
-		ArchiveUserStories:    domain.NewArchiveUserStories(archiveRepo),
-		CacheArchivedUserView: domain.NewCacheArchivedUserView(mstorage),
-		IsUserCached:          domain.NewIsUserCached(mstorage),
+		PurifyCloudStories:        domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
+		PurifyUsername:            domain.NewPurifyUsername(),
+		DownloadUserStories:       domain.NewDownloadUserStories(client),
+		GetLatestStories:          domain.NewGetLatestStories(userRepo),
+		ArchiveUserStories:        domain.NewArchiveUserStories(archiveRepo),
+		CacheArchivedUserView:     domain.NewCacheArchivedUserView(mstorage),
+		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(mstorage),
 	}
 
 	return vault, nil

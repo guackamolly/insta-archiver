@@ -26,12 +26,12 @@ func onArchiveUserStories(
 	cs = core.Invoke(fs, vault.ArchiveUserStories, onError)
 	cs = core.Invoke(cs, vault.PurifyCloudStories, onError)
 
-	view = &model.ArchivedUserView{
-		Username:    pun,
-		LastStories: cs,
-	}
-
-	return core.Invoke(*view, vault.CacheArchivedUserView, onError)
+	// cache view on return
+	return core.Invoke(
+		model.NewArchivedUserView(pun, "Something along these lines", cs),
+		vault.CacheArchivedUserView,
+		onError,
+	)
 }
 
 func onError(
