@@ -10,7 +10,7 @@ type FileSystemArchiveRepository struct {
 	storage *storage.FileSystemStorage
 }
 
-func (r FileSystemArchiveRepository) Archive(stories ...model.FileStory) ([]model.CloudStory, error) {
+func (r FileSystemArchiveRepository) Archive(stories []model.FileStory) ([]model.CloudStory, error) {
 	cs := make([]model.CloudStory, len(stories))
 
 	for i, v := range stories {
