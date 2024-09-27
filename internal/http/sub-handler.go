@@ -25,7 +25,7 @@ func onArchiveUserStories(
 		return *view, nil
 	}
 
-	// 2. Execute archiving callsd (Fetch + Download + Archive + Cache)
+	// 2. Execute archiving calls (Fetch + Download + Archive + Cache)
 	cs, err := domain.Invoke(pun, vault.GetLatestStories, err)
 	fs, err := domain.Invoke(cs, vault.DownloadUserStories, err)
 	cs, err = domain.Invoke(fs, vault.ArchiveUserStories, err)
