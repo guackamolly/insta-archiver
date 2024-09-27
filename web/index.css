@@ -116,9 +116,15 @@ span {
     gap: 5px;
 }
 
-.gallery>img {
+.gallery>a {
     width: 33%;
 }
+
+.gallery>a>img {
+    max-width: 100%;
+    background-color: red;
+}
+
 
 @media screen and (max-width: 1366px) {
     main {
