@@ -17,3 +17,16 @@ func GroupBy[K comparable, T any](
 
 	return m
 }
+
+func Find[T any](
+	values []T,
+	pred func(T) bool,
+) *T {
+	for _, v := range values {
+		if pred(v) {
+			return &v
+		}
+	}
+
+	return nil
+}
