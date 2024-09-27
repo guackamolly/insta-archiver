@@ -32,6 +32,10 @@ func NewStory[T any](
 	}
 }
 
+func (s Story[T]) Equal(o Story[T]) bool {
+	return s.Username == o.Username && (s.Id == o.Id || s.PublishedOn == o.PublishedOn)
+}
+
 // A story model that can be used for client responses.
 type CloudStory = Story[string]
 
