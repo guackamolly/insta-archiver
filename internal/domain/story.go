@@ -17,7 +17,7 @@ type PurifyCloudStories struct {
 }
 
 func (u GetLatestStories) Invoke(username string) ([]model.CloudStory, error) {
-	return u.repository.Stories(username)
+	return WrapResult(username, u.repository.Stories, FetchStoriesFailed)
 }
 
 func (u PurifyCloudStories) Invoke(stories []model.CloudStory) ([]model.CloudStory, error) {

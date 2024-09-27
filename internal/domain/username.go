@@ -4,6 +4,8 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+
+	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
 // A simple regex for matching valid Instagram usernames (can contain letters, numbers, dots (.) and underscores (_))
@@ -16,7 +18,7 @@ type PurifyUsername struct{}
 func (u PurifyUsername) Invoke(username string) (string, error) {
 	s := stripUsername(username)
 
-	return s, validateUsername(s)
+	return s, model.Wrap(validateUsername(s), ValidateUsernameFailed)
 }
 
 // Required to be called before [validateUsername], as users may submit an username starting with @
@@ -35,7 +37,7 @@ func validateUsername(username string) error {
 		return errors.New("username exceeds 30 characters")
 	}
 
-	if m := usernameRegex.FindStringSubmatch(username); len(m[0]) != l {
+	if m := usernameRegex.FindStringSubmatch(username); len(m) == 0 || len(m[0]) != l {
 		return errors.New("username contains invalid characters")
 	}
 

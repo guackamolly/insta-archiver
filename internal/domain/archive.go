@@ -10,5 +10,5 @@ type ArchiveUserStories struct {
 }
 
 func (u ArchiveUserStories) Invoke(stories []model.FileStory) ([]model.CloudStory, error) {
-	return u.repository.Archive(stories...)
+	return WrapResult(stories, u.repository.Archive, ArchiveFailed)
 }

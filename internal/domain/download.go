@@ -22,11 +22,11 @@ func (u DownloadUserStories) Invoke(stories []model.CloudStory) ([]model.FileSto
 		m, merr := u.downloadAndStat(v.Media, fmt.Sprintf("%s/%s.mp4", tmp, v.Id))
 
 		if terr != nil {
-			return nil, terr
+			return nil, model.Wrap(terr, DownloadThumbnailFailed)
 		}
 
 		if merr != nil {
-			return nil, merr
+			return nil, model.Wrap(merr, DownloadMediaFailed)
 		}
 
 		fs[i] = model.NewStory(v.Id, v.Username, v.PublishedOn, *t, *m)

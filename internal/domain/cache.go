@@ -20,7 +20,7 @@ type GetCachedArchivedUserView struct {
 }
 
 func (u LoadCacheArchivedUserView) Invoke() error {
-	c, err := u.repository.Load()
+	c, err := WrapResult0(u.repository.Load, LoadCacheFailed)
 
 	for id := range c {
 		fmt.Printf("loaded cache for user %s\n", id)
@@ -37,7 +37,7 @@ func (u CacheArchivedUserView) Invoke(view model.ArchivedUserView) (model.Archiv
 		v = ce.Value
 	}
 
-	return v, err
+	return v, model.Wrap(err, UpdateCacheFailed)
 }
 
 func (u GetCachedArchivedUserView) Invoke(username string) (*model.ArchivedUserView, error) {
@@ -47,5 +47,5 @@ func (u GetCachedArchivedUserView) Invoke(username string) (*model.ArchivedUserV
 		return &v.Value, nil
 	}
 
-	return nil, nil
+	return nil, model.Wrap(err, LookupCacheFailed)
 }
