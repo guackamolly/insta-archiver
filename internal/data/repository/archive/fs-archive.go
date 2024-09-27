@@ -24,6 +24,7 @@ func (r FileSystemArchiveRepository) Archive(stories []model.FileStory) ([]model
 			v.Id,
 			v.Username,
 			v.PublishedOn,
+			v.IsVideo,
 			fs[0].Path,
 			fs[1].Path,
 		)

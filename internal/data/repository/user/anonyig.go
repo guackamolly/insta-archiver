@@ -59,8 +59,9 @@ func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory
 
 		thumbnail := thumb.URL
 		media := thumbnail
+		isVideo := video != nil
 
-		if video != nil {
+		if isVideo {
 			media = video.URL
 		}
 
@@ -76,6 +77,7 @@ func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory
 			v.Pk,
 			username,
 			pdt,
+			isVideo,
 			thumbnail,
 			media,
 		)

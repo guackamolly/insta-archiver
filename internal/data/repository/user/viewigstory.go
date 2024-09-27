@@ -49,6 +49,7 @@ func (r ViewIGStoryUserRepository) Stories(username string) ([]model.CloudStory,
 			v.CreatedTime,
 			username,
 			pdt,
+			v.Type == "video",
 			fmt.Sprintf("https://viewigstory.com/proxy/%s", v.ThumbnailURL),
 			fmt.Sprintf("https://viewigstory.com/proxy/%s", v.VideoURL),
 		)

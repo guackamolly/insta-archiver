@@ -14,12 +14,14 @@ type Story[T any] struct {
 	PublishedOn time.Time
 	Thumbnail   T
 	Media       T
+	IsVideo     bool
 }
 
 func NewStory[T any](
 	id,
 	username string,
 	publishedOn time.Time,
+	isVideo bool,
 	thumbnail T,
 	media T,
 ) Story[T] {
@@ -29,6 +31,7 @@ func NewStory[T any](
 		PublishedOn: publishedOn,
 		Thumbnail:   thumbnail,
 		Media:       media,
+		IsVideo:     isVideo,
 	}
 }
 
