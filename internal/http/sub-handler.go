@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/guackamolly/insta-archiver/internal/core"
+	"github.com/guackamolly/insta-archiver/internal/domain"
 	"github.com/guackamolly/insta-archiver/internal/model"
 	"github.com/labstack/echo/v4"
 )
@@ -12,33 +13,29 @@ func onArchiveUserStories(
 	ectx echo.Context,
 	vault core.Vault,
 	username string,
-) model.ArchivedUserView {
-	onError := ectx.Error
+) (model.ArchivedUserView, error) {
 
-	pun := core.Invoke(username, vault.PurifyUsername, onError)
-	view := core.Invoke(pun, vault.GetCachedArchivedUserView, onError)
+	// 1. Validate username + check if view is cached
+	pun, err := domain.Invoke(username, vault.PurifyUsername, nil)
+	view, cerr := domain.Invoke(pun, vault.GetCachedArchivedUserView, err)
 
 	// If cached, return immediately
-	if view != nil {
+	if cerr == nil && view != nil {
 		fmt.Printf("user %s is cached, returning cached view\n", pun)
-		return *view
+		return *view, nil
 	}
 
-	cs := core.Invoke(pun, vault.GetLatestStories, onError)
-	fs := core.Invoke(cs, vault.DownloadUserStories, onError)
-	cs = core.Invoke(fs, vault.ArchiveUserStories, onError)
-	cs = core.Invoke(cs, vault.PurifyCloudStories, onError)
+	// 2. Execute archiving callsd (Fetch + Download + Archive + Cache)
+	cs, err := domain.Invoke(pun, vault.GetLatestStories, err)
+	fs, err := domain.Invoke(cs, vault.DownloadUserStories, err)
+	cs, err = domain.Invoke(fs, vault.ArchiveUserStories, err)
+	cs, err = domain.Invoke(cs, vault.PurifyCloudStories, err)
+	v, cerr := domain.Invoke(model.NewArchivedUserView(pun, "Something along these lines", cs), vault.CacheArchivedUserView, err)
 
-	v := model.NewArchivedUserView(pun, "Something along these lines", cs)
+	// if cache fails, we can still rely on memory value
+	if err == nil && cerr != nil {
+		ectx.Logger().Error(err)
+	}
 
-	core.Invoke(
-		v,
-		vault.CacheArchivedUserView,
-		func(err error) {
-			// if cache fails, we can still rely on memory value
-			ectx.Logger().Error(err)
-		},
-	)
-
-	return v
+	return v, err
 }
