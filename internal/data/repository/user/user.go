@@ -17,3 +17,11 @@ func NewViewIGStoryUserRepository(
 		client: client,
 	}
 }
+
+func NewAnonyIGStoryUserRepository(
+	client http.HttpClient,
+) UserRepository {
+	return AnonyIGStoryUserRepository{
+		client: client,
+	}
+}
