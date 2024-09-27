@@ -43,7 +43,7 @@ func (c nativeHttpClient) Do(req HttpRequest) (HttpResponse, error) {
 	return resp, err
 }
 
-func (c nativeHttpClient) Download(req HttpRequest) (*os.File, error) {
+func (c nativeHttpClient) Download(req HttpRequest, destPath string) (*os.File, error) {
 	resp, err := c.Do(req)
 
 	if err != nil {
@@ -54,7 +54,7 @@ func (c nativeHttpClient) Download(req HttpRequest) (*os.File, error) {
 		return nil, fmt.Errorf("download failed:\nurl: %s\nstatus: %d", req.QueryURL(), resp.StatusCode)
 	}
 
-	f, err := os.CreateTemp("", "*")
+	f, err := c.destOrTempFile(destPath)
 
 	if err == nil {
 		defer resp.Body.read.Close()
@@ -62,4 +62,26 @@ func (c nativeHttpClient) Download(req HttpRequest) (*os.File, error) {
 	}
 
 	return f, err
+}
+
+func (c nativeHttpClient) destOrTempFile(destPath string) (*os.File, error) {
+	if destPath == "" {
+		return os.CreateTemp("", "*")
+	}
+
+	s, err := os.Stat(destPath)
+
+	if os.IsNotExist(err) {
+		return os.Create(destPath)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if s.IsDir() {
+		return nil, fmt.Errorf("cannot download file to %s since it's a directory", destPath)
+	}
+
+	return os.Create(destPath)
 }
