@@ -44,7 +44,7 @@
                     {{range $story := .LastStories}}
                     <a href="{{$story.Media}}">
                         <img src="{{$story.Thumbnail}}"
-                            alt="thumbnail of one of the latest stories published by user @{{.Username}}" />
+                            alt="thumbnail of one of the latest stories published by user @{{$.Username}}" />
                     </a>
                     {{end}}
                 </section>
@@ -57,7 +57,7 @@
                 <section class="gallery">
                     {{range $story := $stories}}
                     <img lazy src="{{$story.Thumbnail}}"
-                        alt="thumbnail of an old story published by user @{{.Username}}"" />
+                        alt="thumbnail of an old story published by user @{{$.Username}}" />
                     {{end}}
                 </section>
                 {{end}}

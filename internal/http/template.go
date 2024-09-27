@@ -12,7 +12,13 @@ type Template struct {
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
+	err := t.templates.ExecuteTemplate(w, name, data)
+
+	if err != nil {
+		c.Logger().Error(err)
+	}
+
+	return err
 }
 
 func RegisterTemplates(e *echo.Echo) error {
