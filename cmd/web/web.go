@@ -55,7 +55,7 @@ func createVault(
 	}
 
 	archiveRepo := archive.NewFileSystemArchiveRepository(fstorage)
-	userRepo := user.NewViewIGStoryUserRepository(client)
+	userRepo := user.NewFakeUserRepository()
 	cacheRepo := cache.NewFileSystemMemoryCacheRepository(fstorage, mstorage)
 
 	vault = core.Vault{

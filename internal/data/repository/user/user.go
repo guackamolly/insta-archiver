@@ -25,3 +25,7 @@ func NewAnonyIGStoryUserRepository(
 		client: client,
 	}
 }
+
+func NewFakeUserRepository() FakeUserRepository {
+	return FakeUserRepository{}
+}
