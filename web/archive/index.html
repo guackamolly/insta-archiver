@@ -56,9 +56,11 @@
                 <div class="divider"></div>
                 <section class="gallery">
                     {{range $story := $stories}}
-                    <img lazy src="{{$story.Thumbnail}}"
-                        alt="thumbnail of an old story published by user @{{$.Username}}" />
-                    {{end}}
+                    <a href="{{$story.Media}}">
+                        <img lazy src="{{$story.Thumbnail}}"
+                            alt="thumbnail of an old story published by user @{{$.Username}}" />
+                        {{end}}
+                    </a>
                 </section>
                 {{end}}
             </div>
