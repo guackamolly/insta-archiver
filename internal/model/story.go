@@ -35,8 +35,11 @@ func NewStory[T any](
 	}
 }
 
-func (s Story[T]) Equal(o Story[T]) bool {
-	return s.Username == o.Username && (s.Id == o.Id || s.PublishedOn == o.PublishedOn)
+func SameStory[T1 any, T2 any](
+	o1 Story[T1],
+	o2 Story[T2],
+) bool {
+	return o1.Username == o2.Username && (o1.Id == o2.Id || o1.PublishedOn == o2.PublishedOn)
 }
 
 // A story model that can be used for client responses.
