@@ -7,6 +7,7 @@ import (
 
 // Data operations related to stories archiving
 type ArchiveRepository interface {
+	All(username string) ([]model.CloudStory, error)
 	Archive(stories []model.FileStory) ([]model.CloudStory, error)
 }
 

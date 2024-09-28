@@ -5,6 +5,8 @@ import "github.com/guackamolly/insta-archiver/internal/domain"
 // Main application DI container.
 type Vault struct {
 	DownloadUserStories       domain.DownloadUserStories
+	FilterStoriesForDownload  domain.FilterStoriesForDownload
+	GetArchivedStories        domain.GetArchivedStories
 	GetLatestStories          domain.GetLatestStories
 	ArchiveUserStories        domain.ArchiveUserStories
 	PurifyCloudStories        domain.PurifyCloudStories

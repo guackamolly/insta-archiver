@@ -42,6 +42,7 @@ func (u DownloadUserStories) Invoke(stories []model.CloudStory) ([]model.FileSto
 }
 
 func (u DownloadUserStories) downloadAndStat(url string, destPath string) (*storage.File, error) {
+	fmt.Printf("downloading story %s...\n", url)
 	f, err := u.client.Download(http.GetHttpRequest(url, nil, nil), destPath)
 
 	if err != nil {

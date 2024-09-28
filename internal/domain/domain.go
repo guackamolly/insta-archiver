@@ -8,6 +8,22 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
+func NewFilterStoriesForDownload(
+	repo archive.ArchiveRepository,
+) FilterStoriesForDownload {
+	return FilterStoriesForDownload{
+		repository: repo,
+	}
+}
+
+func NewGetArchivedStories(
+	repo archive.ArchiveRepository,
+) GetArchivedStories {
+	return GetArchivedStories{
+		repository: repo,
+	}
+}
+
 func NewGetLatestStories(
 	repo user.UserRepository,
 ) GetLatestStories {

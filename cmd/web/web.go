@@ -55,13 +55,15 @@ func createVault(
 	}
 
 	archiveRepo := archive.NewFileSystemArchiveRepository(fstorage)
-	userRepo := user.NewFakeUserRepository()
+	userRepo := user.NewAnonyIGStoryUserRepository(client)
 	cacheRepo := cache.NewFileSystemMemoryCacheRepository(fstorage, mstorage)
 
 	vault = core.Vault{
+		FilterStoriesForDownload:  domain.NewFilterStoriesForDownload(archiveRepo),
 		PurifyCloudStories:        domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
 		PurifyUsername:            domain.NewPurifyUsername(),
 		DownloadUserStories:       domain.NewDownloadUserStories(client),
+		GetArchivedStories:        domain.NewGetArchivedStories(archiveRepo),
 		GetLatestStories:          domain.NewGetLatestStories(userRepo),
 		ArchiveUserStories:        domain.NewArchiveUserStories(archiveRepo),
 		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(cacheRepo),
