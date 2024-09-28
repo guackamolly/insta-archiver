@@ -27,8 +27,15 @@ func onArchiveUserStories(
 
 	// 2. Execute archiving calls (Fetch + Download + Archive + Cache)
 	cs, err := domain.Invoke(pun, vault.GetLatestStories, err)
+	fcs, aerr := domain.Invoke(cs, vault.FilterStoriesForDownload, err)
+
+	if aerr == nil {
+		cs = fcs
+	}
+
 	fs, err := domain.Invoke(cs, vault.DownloadUserStories, err)
-	cs, err = domain.Invoke(fs, vault.ArchiveUserStories, err)
+	_, err = domain.Invoke(fs, vault.ArchiveUserStories, err)
+	cs, err = domain.Invoke(username, vault.GetArchivedStories, err)
 	cs, err = domain.Invoke(cs, vault.PurifyCloudStories, err)
 	v, cerr := domain.Invoke(model.NewArchivedUserView(pun, "Something along these lines", cs), vault.CacheArchivedUserView, err)
 
