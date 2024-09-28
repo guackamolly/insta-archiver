@@ -18,6 +18,41 @@ func GroupBy[K comparable, T any](
 	return m
 }
 
+func Filter[T any](
+	values []T,
+	pred func(T) bool,
+) []T {
+	var r []T
+
+	for _, v := range values {
+		if pred(v) {
+			r = append(r, v)
+		}
+	}
+
+	return r
+}
+
+func MapFilter[T any, M any](
+	values []T,
+	mapf func(T) (M, error),
+	pred func(T) bool,
+) []M {
+	var r []M
+
+	for _, v := range values {
+		if pred(v) {
+			m, err := mapf(v)
+
+			if err == nil {
+				r = append(r, m)
+			}
+		}
+	}
+
+	return r
+}
+
 func Find[T any](
 	values []T,
 	pred func(T) bool,
