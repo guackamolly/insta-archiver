@@ -5,10 +5,11 @@ import (
 )
 
 type ArchivedUserView struct {
-	Username        string
-	Bio             Bio
-	LastStories     []CloudStory
-	ArchivedStories map[string][]CloudStory
+	Username             string
+	Bio                  Bio
+	LastStories          []CloudStory
+	ArchivedStories      map[string][]CloudStory
+	ArchivedStoriesCount int
 }
 
 func NewArchivedUserView(
@@ -28,9 +29,10 @@ func NewArchivedUserView(
 	}
 
 	return ArchivedUserView{
-		Username:        username,
-		Bio:             bio,
-		LastStories:     ts,
-		ArchivedStories: as,
+		Username:             username,
+		Bio:                  bio,
+		LastStories:          ts,
+		ArchivedStories:      as,
+		ArchivedStoriesCount: len(stories),
 	}
 }
