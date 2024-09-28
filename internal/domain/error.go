@@ -9,6 +9,8 @@ const (
 	LookupCacheFailed
 	DownloadThumbnailFailed
 	DownloadMediaFailed
+	DownloadAvatarFailed
+	FetchBioFailed
 	FetchStoriesFailed
 	ConvertStoriesFailed
 	ValidateUsernameFailed

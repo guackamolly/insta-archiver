@@ -47,6 +47,15 @@ type CacheRepository[I comparable, V any] interface {
 	Evict(I) error
 }
 
+func NewMemoryCacheRepository[V any](
+	memStorage *storage.MemoryStorage[string, CacheEntry[V]],
+) MemoryCacheRepository[V] {
+	return MemoryCacheRepository[V]{
+		mem:         memStorage,
+		cachePolicy: time.Hour * 24,
+	}
+}
+
 func NewFileSystemMemoryCacheRepository[V any](
 	fsStorage *storage.FileSystemStorage,
 	memStorage *storage.MemoryStorage[string, CacheEntry[V]],

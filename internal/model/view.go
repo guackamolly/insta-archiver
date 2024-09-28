@@ -6,14 +6,14 @@ import (
 
 type ArchivedUserView struct {
 	Username        string
-	Description     string
+	Bio             Bio
 	LastStories     []CloudStory
 	ArchivedStories map[string][]CloudStory
 }
 
 func NewArchivedUserView(
-	username,
-	description string,
+	username string,
+	bio Bio,
 	stories []CloudStory,
 ) ArchivedUserView {
 	as := GroupBy(stories, func(s CloudStory) string {
@@ -29,7 +29,7 @@ func NewArchivedUserView(
 
 	return ArchivedUserView{
 		Username:        username,
-		Description:     description,
+		Bio:             bio,
 		LastStories:     ts,
 		ArchivedStories: as,
 	}

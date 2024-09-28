@@ -13,6 +13,44 @@ type AnonyIGStoryUserRepository struct {
 	client http.HttpClient
 }
 
+func (r AnonyIGStoryUserRepository) Bio(username string) (model.Bio, error) {
+	var res model.Bio
+
+	u := fmt.Sprintf("https://anonyig.com/api/ig/userInfoByUsername/%s", username)
+	resp, err := r.client.Do(
+		http.GetHttpRequest(
+			u,
+			anonyigHeaders(u),
+			nil,
+		),
+	)
+
+	if err != nil {
+		return res, err
+	}
+
+	body, err := http.Typed[anonyIGGetUserBioResponse](&resp.Body)
+
+	if err != nil {
+		return res, err
+	}
+
+	bio := body.Result
+	profilePicMatch := model.Find(bio.User.HdProfilePicVersions, func(v anonyIGHDProfilePicVersion) bool {
+		return v.Width == 320
+	})
+
+	avatarUrl := ""
+
+	if profilePicMatch != nil {
+		avatarUrl = profilePicMatch.URL
+	} else if len(bio.User.HdProfilePicVersions) != 0 {
+		avatarUrl = bio.User.HdProfilePicVersions[0].URL
+	}
+
+	return model.NewBio(username, bio.User.Biography, avatarUrl), nil
+}
+
 func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory, error) {
 	var res []model.CloudStory
 
@@ -29,7 +67,7 @@ func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory
 		return res, err
 	}
 
-	body, err := http.Typed[AnonyIGGetUserStoriesResponse](&resp.Body)
+	body, err := http.Typed[anonyIGGetUserStoriesResponse](&resp.Body)
 
 	if err != nil {
 		return res, err
@@ -107,8 +145,27 @@ type anonyIGGetUserStoriesResponseVideoCandidate struct {
 	} `json:"url_signature"`
 }
 
-// Structure of a successful JSON response from ViewIGStory API.
-type AnonyIGGetUserStoriesResponse struct {
+type anonyIGHDProfilePicVersion struct {
+	Height       int    `json:"height"`
+	URL          string `json:"url"`
+	Width        int    `json:"width"`
+	URLSignature struct {
+		Expires   string `json:"expires"`
+		Signature string `json:"signature"`
+	} `json:"url_signature"`
+}
+
+type anonyIGGetUserBioResponse struct {
+	Result struct {
+		User struct {
+			IsPrivate            bool                         `json:"is_private"`
+			Biography            string                       `json:"biography"`
+			HdProfilePicVersions []anonyIGHDProfilePicVersion `json:"hd_profile_pic_versions"`
+		} `json:"user"`
+	} `json:"result"`
+}
+
+type anonyIGGetUserStoriesResponse struct {
 	Result []struct {
 		ImageVersions2 struct {
 			Candidates []anonyIGGetUserStoriesResponseThumbnailCandidate `json:"candidates"`

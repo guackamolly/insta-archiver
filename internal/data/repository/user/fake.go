@@ -9,6 +9,14 @@ import (
 // Dumb [UserRepository] that uses fake data for testing purposes.
 type FakeUserRepository struct{}
 
+func (r FakeUserRepository) Bio(username string) (model.Bio, error) {
+	return model.NewBio(
+		username,
+		"I have a really cool bio",
+		"https://fakeimg.pl/128x128/282828/eae0d0/?retina=1&text=%20%F0%9F%98%8B",
+	), nil
+}
+
 func (r FakeUserRepository) Stories(username string) ([]model.CloudStory, error) {
 	return []model.CloudStory{
 		model.NewStory(

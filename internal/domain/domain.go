@@ -5,6 +5,7 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
+	"github.com/guackamolly/insta-archiver/internal/data/storage"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
@@ -24,6 +25,16 @@ func NewGetArchivedStories(
 	}
 }
 
+func NewGetUserBio(
+	cacheRepo cache.MemoryCacheRepository[model.Bio],
+	userRepo user.UserRepository,
+) GetUserBio {
+	return GetUserBio{
+		userRepository:  userRepo,
+		cacheRepository: cacheRepo,
+	}
+}
+
 func NewGetLatestStories(
 	repo user.UserRepository,
 ) GetLatestStories {
@@ -40,6 +51,14 @@ func NewDownloadUserStories(
 	}
 }
 
+func NewDownloadUserAvatar(
+	client http.HttpClient,
+) DownloadUserAvatar {
+	return DownloadUserAvatar{
+		client: client,
+	}
+}
+
 func NewArchiveUserStories(
 	repo archive.ArchiveRepository,
 ) ArchiveUserStories {
@@ -48,11 +67,19 @@ func NewArchiveUserStories(
 	}
 }
 
-func NewPurifyCloudStories(
+func NewArchiveUserAvatar(
+	storage *storage.FileSystemStorage,
+) ArchiveUserAvatar {
+	return ArchiveUserAvatar{
+		storage: storage,
+	}
+}
+
+func NewPurifyStaticUrl(
 	physicalContentDir,
 	virtualContentDir string,
-) PurifyCloudStories {
-	return PurifyCloudStories{
+) PurifyStaticUrl {
+	return PurifyStaticUrl{
 		physicalContentDir: physicalContentDir,
 		virtualContentDir:  virtualContentDir,
 	}

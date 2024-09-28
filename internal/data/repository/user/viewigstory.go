@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -11,6 +12,10 @@ import (
 // Implements [UserRepository] using [ViewIGStory](https://viewigstory.com) API.
 type ViewIGStoryUserRepository struct {
 	client http.HttpClient
+}
+
+func (r ViewIGStoryUserRepository) Bio(username string) (model.Bio, error) {
+	return model.Bio{}, errors.New("not implemented yet")
 }
 
 func (r ViewIGStoryUserRepository) Stories(username string) ([]model.CloudStory, error) {

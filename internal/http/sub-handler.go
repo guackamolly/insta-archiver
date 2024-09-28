@@ -15,8 +15,9 @@ func onArchiveUserStories(
 	username string,
 ) (model.ArchivedUserView, error) {
 
-	// 1. Validate username + check if view is cached
+	// 1. Validate username
 	pun, err := domain.Invoke(username, vault.PurifyUsername, nil)
+	// 2. Check if view is cached
 	view, cerr := domain.Invoke(pun, vault.GetCachedArchivedUserView, err)
 
 	// If cached, return immediately
@@ -25,7 +26,27 @@ func onArchiveUserStories(
 		return *view, nil
 	}
 
-	// 2. Execute archiving calls (Fetch + Download + Archive + Cache)
+	// 3. Get user bio
+	bio, berr := domain.Invoke(pun, vault.GetUserBio, err)
+
+	// if bio fetch failed, use the default one
+	if err == nil && berr != nil {
+		bio = model.DefaultBio()
+	}
+
+	if err == nil && berr == nil {
+		df, dferr := domain.Invoke(bio, vault.DownloadUserAvatar, berr)
+
+		if dferr == nil {
+			aa, aaerr := vault.ArchiveUserAvatar.Invoke(pun, df)
+			if aaerr == nil {
+				url, _ := vault.PurifyStaticUrl.Invoke(aa.Path)
+				bio = model.NewBio(bio.Avatar, bio.Description, url)
+			}
+		}
+	}
+
+	// 4. Execute archiving calls (Fetch + Download + Archive + Cache)
 	cs, err := domain.Invoke(pun, vault.GetLatestStories, err)
 	fcs, aerr := domain.Invoke(cs, vault.FilterStoriesForDownload, err)
 
@@ -36,8 +57,21 @@ func onArchiveUserStories(
 	fs, err := domain.Invoke(cs, vault.DownloadUserStories, err)
 	_, err = domain.Invoke(fs, vault.ArchiveUserStories, err)
 	cs, err = domain.Invoke(username, vault.GetArchivedStories, err)
-	cs, err = domain.Invoke(cs, vault.PurifyCloudStories, err)
-	v, cerr := domain.Invoke(model.NewArchivedUserView(pun, "Something along these lines", cs), vault.CacheArchivedUserView, err)
+
+	if err != nil {
+		return model.ArchivedUserView{}, err
+	}
+
+	cs, err = vault.PurifyStaticUrl.InvokeStories(cs)
+	v, cerr := domain.Invoke(
+		model.NewArchivedUserView(
+			pun,
+			bio,
+			cs,
+		),
+		vault.CacheArchivedUserView,
+		err,
+	)
 
 	// if cache fails, we can still rely on memory value
 	if err == nil && cerr != nil {

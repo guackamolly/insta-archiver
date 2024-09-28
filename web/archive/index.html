@@ -25,9 +25,9 @@
         <main>
             <div class="main-content-1">
                 <h1>Archive for @{{.Username}}</h1>
-                {{if .Description}}
+                {{if .Bio.Description}}
                 <span>
-                    {{.Description}}
+                    {{.Bio.Description}}
                 </span>
                 {{end}}
                 <span>
@@ -35,9 +35,12 @@
                     |
                     Last (24h) Stories: <b>{{len .LastStories}}</b>
                 </span>
+                {{if gt (len .Bio.Avatar) 0}}
                 <img
                     style="position: absolute; right: 22%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; width: 6%;"
-                    src="/static/test.png" />
+                    src="{{.Bio.Avatar}}" />
+                {{end}}
+
                 {{if gt (len .LastStories) 0}}
                 <div class="divider"></div>
                 <section class="gallery">

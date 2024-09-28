@@ -47,28 +47,33 @@ func createVault(
 	var vault core.Vault
 
 	client := client.Native()
-	fstorage, err := storage.NewFileSystemStorage(physicalContentDir)
-	mstorage := storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]()
+	fStorage, err := storage.NewFileSystemStorage(physicalContentDir)
+	auvMStorage := storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]()
+	bioMStorage := storage.NewMemoryStorage[string, cache.CacheEntry[model.Bio]]()
 
 	if err != nil {
 		return vault, err
 	}
 
-	archiveRepo := archive.NewFileSystemArchiveRepository(fstorage)
+	archiveRepo := archive.NewFileSystemArchiveRepository(fStorage)
 	userRepo := user.NewAnonyIGStoryUserRepository(client)
-	cacheRepo := cache.NewFileSystemMemoryCacheRepository(fstorage, mstorage)
+	auvCacheRepo := cache.NewFileSystemMemoryCacheRepository(fStorage, auvMStorage)
+	bioCacheRepo := cache.NewMemoryCacheRepository(bioMStorage)
 
 	vault = core.Vault{
 		FilterStoriesForDownload:  domain.NewFilterStoriesForDownload(archiveRepo),
-		PurifyCloudStories:        domain.NewPurifyCloudStories(physicalContentDir, virtualContentDir),
+		PurifyStaticUrl:           domain.NewPurifyStaticUrl(physicalContentDir, virtualContentDir),
 		PurifyUsername:            domain.NewPurifyUsername(),
+		DownloadUserAvatar:        domain.NewDownloadUserAvatar(client),
 		DownloadUserStories:       domain.NewDownloadUserStories(client),
 		GetArchivedStories:        domain.NewGetArchivedStories(archiveRepo),
 		GetLatestStories:          domain.NewGetLatestStories(userRepo),
 		ArchiveUserStories:        domain.NewArchiveUserStories(archiveRepo),
-		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(cacheRepo),
-		CacheArchivedUserView:     domain.NewCacheArchivedUserView(cacheRepo),
-		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(cacheRepo),
+		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(auvCacheRepo),
+		ArchiveUserAvatar:         domain.NewArchiveUserAvatar(fStorage),
+		CacheArchivedUserView:     domain.NewCacheArchivedUserView(auvCacheRepo),
+		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(auvCacheRepo),
+		GetUserBio:                domain.NewGetUserBio(bioCacheRepo, userRepo),
 	}
 
 	return vault, nil
