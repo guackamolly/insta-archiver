@@ -22,6 +22,8 @@ var (
 	dirs = map[string]string{
 		"/static":  serverPublicRoot + "static/",
 		"/content": serverPublicRoot + "content/",
+		"/about":   serverPublicRoot + "about/",
+		"/contact": serverPublicRoot + "contact/",
 	}
 
 	templates = []string{
