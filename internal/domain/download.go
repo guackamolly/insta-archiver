@@ -27,13 +27,13 @@ func (u DownloadUserProfile) Invoke(profile model.Profile) (model.Profile, error
 		alreadyDownloadedContent = []storage.File{}
 	}
 
-	logging.LogInfo("downloading stories of %s...\n", profile.Bio.Username)
+	logging.LogInfo("downloading stories of %s...", profile.Bio.Username)
 	stories, err := u.downloadStories(profile, alreadyDownloadedContent, tmp)
 	if err != nil {
 		return model.Profile{}, err
 	}
 
-	logging.LogInfo("downloading avatar of %s...\n", profile.Bio.Username)
+	logging.LogInfo("downloading avatar of %s...", profile.Bio.Username)
 	avatar, err := u.downloadAvatar(profile, alreadyDownloadedContent, tmp)
 	if err != nil {
 		return model.Profile{}, err
@@ -117,7 +117,6 @@ func (u DownloadUserProfile) downloadAvatar(profile model.Profile, alreadyDownlo
 	if f := model.Find(alreadyDownloadedContent, func(f storage.File) bool {
 		return f.Name() == "avatar.jpeg"
 	}); f != nil {
-
 		return u.purifyUrl(f.Path), nil
 	}
 
@@ -145,7 +144,7 @@ func (u DownloadUserProfile) purifyUrl(url string) string {
 }
 
 func (u DownloadUserProfile) downloadAndStat(url string, destPath string) (*storage.File, error) {
-	logging.LogInfo("downloading %s...\n", url)
+	logging.LogInfo("downloading %s...", url)
 	f, err := u.client.Download(http.GetHttpRequest(url, nil, nil), destPath)
 
 	if err != nil {
