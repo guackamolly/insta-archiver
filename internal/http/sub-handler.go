@@ -1,12 +1,14 @@
 package http
 
 import (
+	"time"
+
 	"github.com/guackamolly/insta-archiver/internal/core"
 	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
-func onArchiveUserStories(
+func ArchiveUser(
 	vault core.Vault,
 	username string,
 ) (model.ArchivedUserView, error) {
@@ -28,22 +30,37 @@ func onArchiveUserStories(
 		return view, nil
 	}
 
-	// 3. Get user profile
-	profile, err := vault.GetUserProfile.Invoke(pun)
+	view, err = getAndCacheUserProfile(pun, vault)
 
-	if err != nil {
-		return view, err
+	if err == nil {
+		vault.CacheArchivedUserView.Schedule(view.Username, time.Duration(0), func() (model.ArchivedUserView, error) {
+			return getAndCacheUserProfile(view.Username, vault)
+		})
 	}
 
-	// 4. Download user profile
+	return view, err
+}
+
+func getAndCacheUserProfile(
+	username string,
+	vault core.Vault,
+) (model.ArchivedUserView, error) {
+	// 1. Get user profile
+	profile, err := vault.GetUserProfile.Invoke(username)
+
+	if err != nil {
+		return model.ArchivedUserView{}, err
+	}
+
+	// 2. Download user profile
 	profile, err = vault.DownloadUserProfile.Invoke(profile)
 
 	if err != nil {
-		return view, err
+		return model.ArchivedUserView{}, err
 	}
 
-	//5. Cache view
-	view = model.NewArchivedUserView(profile)
+	// 3. Cache view
+	view := model.NewArchivedUserView(profile)
 	view, err = vault.CacheArchivedUserView.Invoke(view)
 
 	return view, err

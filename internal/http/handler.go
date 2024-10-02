@@ -22,7 +22,7 @@ func archiveRouteHandler(ectx echo.Context) error {
 	}
 
 	return withVault(ectx, func(v core.Vault) error {
-		resp, err := onArchiveUserStories(v, un)
+		resp, err := ArchiveUser(v, un)
 
 		if err != nil {
 			return err
