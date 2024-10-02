@@ -70,14 +70,14 @@ func (u CacheArchivedUserView) Schedule(username string, duration time.Duration,
 			view, err := refresh()
 
 			if err != nil {
-				logging.LogError("failed to obtain view to refresh...\n%v", err)
+				logging.LogError("failed to obtain view to refresh...%v", err)
 				continue
 			}
 
 			view, err = u.Invoke(view)
 
 			if err != nil {
-				logging.LogError("failed to refresh cache...\n%v", err)
+				logging.LogError("failed to refresh cache...%v", err)
 			} else {
 				logging.LogInfo("cache of %s view has been refreshed", view.Username)
 			}
