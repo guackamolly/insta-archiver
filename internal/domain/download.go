@@ -7,6 +7,7 @@ import (
 
 	"github.com/guackamolly/insta-archiver/internal/data/client/http"
 	"github.com/guackamolly/insta-archiver/internal/data/storage"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
@@ -26,13 +27,13 @@ func (u DownloadUserProfile) Invoke(profile model.Profile) (model.Profile, error
 		alreadyDownloadedContent = []storage.File{}
 	}
 
-	fmt.Printf("downloading stories of %s...\n", profile.Bio.Username)
+	logging.LogInfo("downloading stories of %s...\n", profile.Bio.Username)
 	stories, err := u.downloadStories(profile, alreadyDownloadedContent, tmp)
 	if err != nil {
 		return model.Profile{}, err
 	}
 
-	fmt.Printf("downloading avatar of %s...\n", profile.Bio.Username)
+	logging.LogInfo("downloading avatar of %s...\n", profile.Bio.Username)
 	avatar, err := u.downloadAvatar(profile, alreadyDownloadedContent, tmp)
 	if err != nil {
 		return model.Profile{}, err
@@ -144,7 +145,7 @@ func (u DownloadUserProfile) purifyUrl(url string) string {
 }
 
 func (u DownloadUserProfile) downloadAndStat(url string, destPath string) (*storage.File, error) {
-	fmt.Printf("downloading %s...\n", url)
+	logging.LogInfo("downloading %s...\n", url)
 	f, err := u.client.Download(http.GetHttpRequest(url, nil, nil), destPath)
 
 	if err != nil {

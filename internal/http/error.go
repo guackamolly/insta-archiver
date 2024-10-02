@@ -9,7 +9,5 @@ func onCustomError(
 	ectx echo.Context,
 	err *model.Error,
 ) error {
-	ectx.Logger().Errorf("processing error: %v\n", err)
-
 	return ectx.File(fallback)
 }

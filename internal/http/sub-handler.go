@@ -1,9 +1,8 @@
 package http
 
 import (
-	"fmt"
-
 	"github.com/guackamolly/insta-archiver/internal/core"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
@@ -25,7 +24,7 @@ func onArchiveUserStories(
 
 	// If cached, return immediately
 	if err == nil {
-		fmt.Printf("user %s is cached, returning cached view\n", pun)
+		logging.LogInfo("user %s is cached, returning cached view", pun)
 		return view, nil
 	}
 

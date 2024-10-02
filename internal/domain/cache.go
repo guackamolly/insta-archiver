@@ -1,9 +1,8 @@
 package domain
 
 import (
-	"fmt"
-
 	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
@@ -23,7 +22,7 @@ func (u LoadCacheArchivedUserView) Invoke() error {
 	c, err := WrapResult0(u.repository.Load, LoadCacheFailed)
 
 	for id := range c {
-		fmt.Printf("loaded cache for user %s\n", id)
+		logging.LogInfo("loaded cache for user %s", id)
 	}
 
 	return err

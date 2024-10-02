@@ -1,9 +1,8 @@
 package http
 
 import (
-	"fmt"
-
 	"github.com/guackamolly/insta-archiver/internal/core"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/labstack/echo/v4"
 )
 
@@ -29,7 +28,7 @@ func loggingMiddleware() echo.MiddlewareFunc {
 		return func(ectx echo.Context) error {
 			req := ectx.Request()
 
-			println(fmt.Sprintf("Host: %s | Method: %s | Path: %s | Client IP: %s", req.Host, req.Method, req.URL.RequestURI(), ectx.RealIP()))
+			logging.LogInfo("Host: %s | Method: %s | Path: %s | Client IP: %s", req.Host, req.Method, req.URL.RequestURI(), ectx.RealIP())
 			return next(ectx)
 		}
 	}

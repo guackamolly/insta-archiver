@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/guackamolly/insta-archiver/internal/core"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 	"github.com/labstack/echo/v4"
 )
@@ -39,12 +40,12 @@ func anyRouteHandler(ectx echo.Context) error {
 
 func httpErrorHandler() func(err error, c echo.Context) {
 	return func(err error, c echo.Context) {
-		c.Logger().Error(err)
-
 		// make sure to not process any false positives
 		if err == nil {
 			return
 		}
+
+		logging.LogError("handling error... %v", err)
 
 		me, ok := err.(*model.Error)
 

@@ -1,9 +1,8 @@
 package domain
 
 import (
-	"fmt"
-
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
@@ -12,13 +11,13 @@ type GetUserProfile struct {
 }
 
 func (u GetUserProfile) Invoke(username string) (model.Profile, error) {
-	fmt.Printf("getting bio for %s...\n", username)
+	logging.LogInfo("getting bio for %s...", username)
 	bio, err := u.userRepository.Bio(username)
 	if err != nil {
 		return model.Profile{}, model.Wrap(err, FetchBioFailed)
 	}
 
-	fmt.Printf("getting stories for %s...\n", username)
+	logging.LogInfo("getting stories for %s...", username)
 	stories, err := u.userRepository.Stories(username)
 	if err != nil {
 		return model.Profile{}, model.Wrap(err, FetchStoriesFailed)

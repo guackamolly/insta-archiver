@@ -8,6 +8,7 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/data/storage"
 	"github.com/guackamolly/insta-archiver/internal/domain"
 	"github.com/guackamolly/insta-archiver/internal/http"
+	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
@@ -18,13 +19,12 @@ func main() {
 	e := echo.New()
 	defer e.Close()
 
+	// Initialize logging
+	setupLogging(e)
+
 	// Initialize di container
 	contentDir := http.ContentDir()
-	vault, err := createVault(contentDir[0], contentDir[1])
-
-	if err != nil {
-		e.Logger.Fatal(err)
-	}
+	vault := createVault(contentDir[0], contentDir[1])
 
 	// Register server dependencies
 	http.RegisterHandlers(e)
@@ -36,20 +36,20 @@ func main() {
 	http.BeforeStart(e, vault)
 
 	// Start!
-	e.Logger.Fatal(http.Start(e))
+	logging.LogFatal("server exit %v", http.Start(e))
 }
 
 func createVault(
 	physicalContentDir,
 	virtualContentDir string,
-) (core.Vault, error) {
+) core.Vault {
 	var vault core.Vault
 
 	client := client.Native()
 	contentStorage, err := storage.NewFileSystemStorage(physicalContentDir)
 
 	if err != nil {
-		panic(err)
+		logging.LogError("failed initializing file system storage... %v", err)
 	}
 
 	// userRepo := user.NewAnonyIGStoryUserRepository(client)
@@ -65,5 +65,10 @@ func createVault(
 		DownloadUserProfile:       domain.NewDownloadUserProfile(client, contentStorage, physicalContentDir, virtualContentDir),
 	}
 
-	return vault, nil
+	return vault
+}
+
+func setupLogging(e *echo.Echo) {
+	logging.AddLogger(logging.NewConsoleLogger())
+	logging.AddLogger(logging.NewEchoLogger(e.Logger))
 }
