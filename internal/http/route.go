@@ -2,5 +2,5 @@ package http
 
 const (
 	rootRoute    = "/"
-	archiveRoute = "/archive"
+	archiveRoute = "/archive/:id"
 )

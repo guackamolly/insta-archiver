@@ -16,8 +16,12 @@ func RegisterHandlers(e *echo.Echo) {
 }
 
 func archiveRouteHandler(ectx echo.Context) error {
+	un := ectx.QueryParam(archiveQueryParam)
+	if un == "" {
+		un = ectx.Param("id")
+	}
+
 	return withVault(ectx, func(v core.Vault) error {
-		un := ectx.QueryParam(archiveQueryParam)
 		resp, err := onArchiveUserStories(v, un)
 
 		if err != nil {
