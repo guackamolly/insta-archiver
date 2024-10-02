@@ -26,14 +26,17 @@
             <div class="main-content-1">
                 <h1>Archive for @{{.Username}}</h1>
                 <section class="bio">
-                    {{if .Description}}
-                    <p>{{.Description}}</p>
-                    {{end}}
-                    <p>
-                        Archived Stories: <b>{{ .ArchivedStoriesCount}}</b>
-                        |
-                        Last (24h) Stories: <b>{{len .LastStories}}</b>
-                    </p>
+                    <span class="bio-description">
+                        {{if .Description}}
+                        <p>{{.Description}}</p>
+                        {{end}}
+                        <p>
+                            Archived Stories: <b>{{ .ArchivedStoriesCount}}</b>
+                            |
+                            Last (24h) Stories: <b>{{len .LastStories}}</b>
+                        </p>
+                    </span>
+
                     {{if gt (len .Avatar) 0}}
                     <img class="avatar" src="{{.Avatar}}" />
                     {{end}}
