@@ -52,8 +52,7 @@ func createVault(
 		logging.LogError("failed initializing file system storage... %v", err)
 	}
 
-	// userRepo := user.NewAnonyIGStoryUserRepository(client)
-	userRepo := user.NewFakeUserRepository()
+	userRepo := user.NewAnonyIGStoryUserRepository(client)
 	cacheRepo := cache.NewFileSystemMemoryCacheRepository(contentStorage, storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]())
 
 	vault = core.Vault{
