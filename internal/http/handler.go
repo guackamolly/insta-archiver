@@ -17,7 +17,7 @@ func RegisterHandlers(e *echo.Echo) {
 func archiveRouteHandler(ectx echo.Context) error {
 	return withVault(ectx, func(v core.Vault) error {
 		un := ectx.QueryParam(archiveQueryParam)
-		resp, err := onArchiveUserStories(ectx, v, un)
+		resp, err := onArchiveUserStories(v, un)
 
 		if err != nil {
 			return err
@@ -39,6 +39,8 @@ func anyRouteHandler(ectx echo.Context) error {
 
 func httpErrorHandler() func(err error, c echo.Context) {
 	return func(err error, c echo.Context) {
+		c.Logger().Error(err)
+
 		// make sure to not process any false positives
 		if err == nil {
 			return

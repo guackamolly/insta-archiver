@@ -10,77 +10,132 @@ import (
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
-type DownloadUserStories struct {
-	client http.HttpClient
-}
+type DownloadUserProfile struct {
+	client         http.HttpClient
+	contentStorage *storage.FileSystemStorage
 
-type DownloadUserAvatar struct {
-	client http.HttpClient
-}
-
-type PurifyStaticUrl struct {
 	physicalContentDir string
 	virtualContentDir  string
 }
 
-func (u DownloadUserStories) Invoke(stories []model.CloudStory) ([]model.FileStory, error) {
-	fs := make([]model.FileStory, len(stories))
+func (u DownloadUserProfile) Invoke(profile model.Profile) (model.Profile, error) {
 	tmp := os.TempDir()
+	alreadyDownloadedContent, err := u.contentStorage.Lookup(profile.Bio.Username)
+
+	if err != nil {
+		alreadyDownloadedContent = []storage.File{}
+	}
+
+	fmt.Printf("downloading stories of %s...\n", profile.Bio.Username)
+	stories, err := u.downloadStories(profile, alreadyDownloadedContent, tmp)
+	if err != nil {
+		return model.Profile{}, err
+	}
+
+	fmt.Printf("downloading avatar of %s...\n", profile.Bio.Username)
+	avatar, err := u.downloadAvatar(profile, alreadyDownloadedContent, tmp)
+	if err != nil {
+		return model.Profile{}, err
+	}
+
+	return model.NewProfile(
+		model.NewBio(
+			profile.Bio.Username,
+			profile.Bio.Description,
+			avatar,
+		),
+		stories,
+	), nil
+}
+
+func (u DownloadUserProfile) downloadStories(profile model.Profile, alreadyDownloadedContent []storage.File, path string) ([]model.Story[string], error) {
+	stories := profile.Stories
 
 	for i, v := range stories {
-		t, terr := downloadAndStat(u.client, v.Thumbnail, fmt.Sprintf("%s/%s.jpeg", tmp, v.Id))
+		// check if content has been downloaded already
+		if f := model.Filter(alreadyDownloadedContent, func(f storage.File) bool {
+			return strings.Contains(f.Name(), v.Id)
+		}); len(f) == 2 {
+			tf := f[0]
+			mf := f[1]
+
+			if n := f[0].Name(); strings.HasSuffix(n, ".mp4") || strings.Contains(n, "media.jpeg") {
+				tf = f[1]
+				mf = f[0]
+			}
+
+			stories[i] = model.NewStory(
+				v.Id,
+				v.Username,
+				v.PublishedOn,
+				v.IsVideo,
+				u.purifyUrl(tf.Path),
+				u.purifyUrl(mf.Path),
+			)
+
+			continue
+		}
+
+		t, terr := u.downloadAndStat(v.Thumbnail, fmt.Sprintf("%s/%s.jpeg", path, v.Id))
 
 		if terr != nil {
 			return nil, model.Wrap(terr, DownloadThumbnailFailed)
 		}
 
-		murl := fmt.Sprintf("%s/%s.mp4", tmp, v.Id)
+		murl := fmt.Sprintf("%s/%s.mp4", path, v.Id)
 
 		if !v.IsVideo {
-			murl = fmt.Sprintf("%s/%s-media.jpeg", tmp, v.Id)
+			murl = fmt.Sprintf("%s/%s-media.jpeg", path, v.Id)
 		}
 
-		m, merr := downloadAndStat(u.client, v.Media, murl)
+		m, merr := u.downloadAndStat(v.Media, murl)
 		if merr != nil {
 			return nil, model.Wrap(merr, DownloadMediaFailed)
 		}
 
-		fs[i] = model.NewStory(v.Id, v.Username, v.PublishedOn, v.IsVideo, *t, *m)
+		fs, err := u.contentStorage.Store(profile.Bio.Username, []storage.File{*t, *m})
+
+		if err != nil {
+			return nil, model.Wrap(terr, StoreStoriesFailed)
+		}
+
+		stories[i] = model.NewStory(
+			v.Id,
+			v.Username,
+			v.PublishedOn,
+			v.IsVideo,
+			u.purifyUrl(fs[0].Path),
+			u.purifyUrl(fs[1].Path),
+		)
 	}
 
-	return fs, nil
+	return stories, nil
 }
 
-func (u DownloadUserAvatar) Invoke(bio model.Bio) (storage.File, error) {
-	var p storage.File
-	tmp := os.TempDir()
+func (u DownloadUserProfile) downloadAvatar(profile model.Profile, alreadyDownloadedContent []storage.File, path string) (string, error) {
+	if f := model.Find(alreadyDownloadedContent, func(f storage.File) bool {
+		return f.Name() == "avatar.jpeg"
+	}); f != nil {
 
-	ap, err := downloadAndStat(u.client, bio.Avatar, fmt.Sprintf("%s/avatar-%s.jpeg", tmp, bio.Username))
+		return u.purifyUrl(f.Path), nil
+	}
+
+	af, err := u.downloadAndStat(profile.Bio.Avatar, fmt.Sprintf("%s/avatar.jpeg", path))
 
 	if err != nil {
-		return p, model.Wrap(err, DownloadAvatarFailed)
+		return "", model.Wrap(err, DownloadAvatarFailed)
 	}
 
-	return *ap, nil
-}
+	fs, err := u.contentStorage.Store(profile.Bio.Username, []storage.File{*af})
 
-func (u PurifyStaticUrl) Invoke(url string) (string, error) {
-	return u.purifyUrl(url), nil
-}
-
-func (u PurifyStaticUrl) InvokeStories(stories []model.CloudStory) ([]model.CloudStory, error) {
-	cs := make([]model.CloudStory, len(stories))
-
-	for i, s := range stories {
-		s.Thumbnail = u.purifyUrl(s.Thumbnail)
-		s.Media = u.purifyUrl(s.Media)
-		cs[i] = s
+	if err != nil {
+		return "", model.Wrap(err, StoreAvatarFailed)
 	}
 
-	return cs, nil
+	return u.purifyUrl(fs[0].Path), nil
 }
 
-func (u PurifyStaticUrl) purifyUrl(url string) string {
+func (u DownloadUserProfile) purifyUrl(url string) string {
 	if strings.HasPrefix(url, u.physicalContentDir) {
 		return strings.Replace(url, u.physicalContentDir, u.virtualContentDir, 1)
 	}
@@ -88,9 +143,9 @@ func (u PurifyStaticUrl) purifyUrl(url string) string {
 	return url
 }
 
-func downloadAndStat(client http.HttpClient, url string, destPath string) (*storage.File, error) {
+func (u DownloadUserProfile) downloadAndStat(url string, destPath string) (*storage.File, error) {
 	fmt.Printf("downloading %s...\n", url)
-	f, err := client.Download(http.GetHttpRequest(url, nil, nil), destPath)
+	f, err := u.client.Download(http.GetHttpRequest(url, nil, nil), destPath)
 
 	if err != nil {
 		return nil, err

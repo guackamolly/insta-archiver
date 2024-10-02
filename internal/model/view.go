@@ -6,18 +6,17 @@ import (
 
 type ArchivedUserView struct {
 	Username             string
-	Bio                  Bio
-	LastStories          []CloudStory
-	ArchivedStories      map[string][]CloudStory
+	Description          string
+	Avatar               string
+	LastStories          []Story[string]
+	ArchivedStories      map[string][]Story[string]
 	ArchivedStoriesCount int
 }
 
 func NewArchivedUserView(
-	username string,
-	bio Bio,
-	stories []CloudStory,
+	profile Profile,
 ) ArchivedUserView {
-	as := GroupBy(stories, func(s CloudStory) string {
+	as := GroupBy(profile.Stories, func(s CloudStory) string {
 		return s.PublishedOn.Format(time.DateOnly)
 	})
 
@@ -29,10 +28,11 @@ func NewArchivedUserView(
 	}
 
 	return ArchivedUserView{
-		Username:             username,
-		Bio:                  bio,
+		Username:             profile.Bio.Username,
+		Description:          profile.Bio.Description,
+		Avatar:               profile.Bio.Avatar,
 		LastStories:          ts,
 		ArchivedStories:      as,
-		ArchivedStoriesCount: len(stories),
+		ArchivedStoriesCount: len(profile.Stories),
 	}
 }

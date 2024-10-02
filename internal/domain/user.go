@@ -1,29 +1,28 @@
 package domain
 
 import (
-	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
+	"fmt"
+
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
-type GetUserBio struct {
-	userRepository  user.UserRepository
-	cacheRepository cache.MemoryCacheRepository[model.Bio]
+type GetUserProfile struct {
+	userRepository user.UserRepository
 }
 
-func (u GetUserBio) Invoke(username string) (model.Bio, error) {
+func (u GetUserProfile) Invoke(username string) (model.Profile, error) {
+	fmt.Printf("getting bio for %s...\n", username)
 	bio, err := u.userRepository.Bio(username)
-
-	if err == nil {
-		return bio, nil
+	if err != nil {
+		return model.Profile{}, model.Wrap(err, FetchBioFailed)
 	}
 
-	cache, err := u.cacheRepository.Lookup(username)
-
-	if err == nil {
-		return cache.Value, nil
+	fmt.Printf("getting stories for %s...\n", username)
+	stories, err := u.userRepository.Stories(username)
+	if err != nil {
+		return model.Profile{}, model.Wrap(err, FetchStoriesFailed)
 	}
 
-	return bio, model.Wrap(err, FetchBioFailed)
-
+	return model.NewProfile(bio, stories), nil
 }

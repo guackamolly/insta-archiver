@@ -30,22 +30,21 @@ func (u LoadCacheArchivedUserView) Invoke() error {
 }
 
 func (u CacheArchivedUserView) Invoke(view model.ArchivedUserView) (model.ArchivedUserView, error) {
-	var v model.ArchivedUserView
 	ce, err := u.repository.Update(view.Username, view)
 
 	if err == nil {
-		v = ce.Value
+		return ce.Value, nil
 	}
 
-	return v, model.Wrap(err, UpdateCacheFailed)
+	return view, model.Wrap(err, UpdateCacheFailed)
 }
 
-func (u GetCachedArchivedUserView) Invoke(username string) (*model.ArchivedUserView, error) {
+func (u GetCachedArchivedUserView) Invoke(username string) (model.ArchivedUserView, error) {
 	v, err := u.repository.Lookup(username)
 
-	if err == nil {
-		return &v.Value, nil
+	if err == nil && !v.IsOutdated() {
+		return v.Value, nil
 	}
 
-	return nil, model.Wrap(err, LookupCacheFailed)
+	return model.ArchivedUserView{}, model.Wrap(err, LookupCacheFailed)
 }

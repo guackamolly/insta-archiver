@@ -11,6 +11,9 @@ const (
 	DownloadMediaFailed
 	DownloadAvatarFailed
 	FetchBioFailed
+	StoreStoriesFailed
+	StoreAvatarFailed
+	FetchProfileFailed
 	FetchStoriesFailed
 	ConvertStoriesFailed
 	ValidateUsernameFailed

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/guackamolly/insta-archiver/internal/core"
 	client "github.com/guackamolly/insta-archiver/internal/data/client/http"
-	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
 	"github.com/guackamolly/insta-archiver/internal/data/storage"
@@ -47,33 +46,23 @@ func createVault(
 	var vault core.Vault
 
 	client := client.Native()
-	fStorage, err := storage.NewFileSystemStorage(physicalContentDir)
-	auvMStorage := storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]()
-	bioMStorage := storage.NewMemoryStorage[string, cache.CacheEntry[model.Bio]]()
+	contentStorage, err := storage.NewFileSystemStorage(physicalContentDir)
 
 	if err != nil {
-		return vault, err
+		panic(err)
 	}
 
-	archiveRepo := archive.NewFileSystemArchiveRepository(fStorage)
-	userRepo := user.NewAnonyIGStoryUserRepository(client)
-	auvCacheRepo := cache.NewFileSystemMemoryCacheRepository(fStorage, auvMStorage)
-	bioCacheRepo := cache.NewMemoryCacheRepository(bioMStorage)
+	// userRepo := user.NewAnonyIGStoryUserRepository(client)
+	userRepo := user.NewFakeUserRepository()
+	cacheRepo := cache.NewFileSystemMemoryCacheRepository(contentStorage, storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]())
 
 	vault = core.Vault{
-		FilterStoriesForDownload:  domain.NewFilterStoriesForDownload(archiveRepo),
-		PurifyStaticUrl:           domain.NewPurifyStaticUrl(physicalContentDir, virtualContentDir),
 		PurifyUsername:            domain.NewPurifyUsername(),
-		DownloadUserAvatar:        domain.NewDownloadUserAvatar(client),
-		DownloadUserStories:       domain.NewDownloadUserStories(client),
-		GetArchivedStories:        domain.NewGetArchivedStories(archiveRepo),
-		GetLatestStories:          domain.NewGetLatestStories(userRepo),
-		ArchiveUserStories:        domain.NewArchiveUserStories(archiveRepo),
-		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(auvCacheRepo),
-		ArchiveUserAvatar:         domain.NewArchiveUserAvatar(fStorage),
-		CacheArchivedUserView:     domain.NewCacheArchivedUserView(auvCacheRepo),
-		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(auvCacheRepo),
-		GetUserBio:                domain.NewGetUserBio(bioCacheRepo, userRepo),
+		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(cacheRepo),
+		CacheArchivedUserView:     domain.NewCacheArchivedUserView(cacheRepo),
+		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(cacheRepo),
+		GetUserProfile:            domain.NewGetUserProfile(userRepo),
+		DownloadUserProfile:       domain.NewDownloadUserProfile(client, contentStorage, physicalContentDir, virtualContentDir),
 	}
 
 	return vault, nil
