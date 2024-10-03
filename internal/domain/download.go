@@ -44,6 +44,7 @@ func (u DownloadUserProfile) Invoke(profile model.Profile) (model.Profile, error
 			profile.Bio.Username,
 			profile.Bio.Description,
 			avatar,
+			profile.Bio.IsPrivate,
 		),
 		stories,
 	), nil

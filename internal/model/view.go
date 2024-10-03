@@ -8,6 +8,7 @@ type ArchivedUserView struct {
 	Username             string
 	Description          string
 	Avatar               string
+	IsPrivate            bool
 	LastStories          []Story[string]
 	ArchivedStories      map[string][]Story[string]
 	ArchivedStoriesCount int
@@ -31,6 +32,7 @@ func NewArchivedUserView(
 		Username:             profile.Bio.Username,
 		Description:          profile.Bio.Description,
 		Avatar:               profile.Bio.Avatar,
+		IsPrivate:            profile.Bio.IsPrivate,
 		LastStories:          ts,
 		ArchivedStories:      as,
 		ArchivedStoriesCount: len(profile.Stories),

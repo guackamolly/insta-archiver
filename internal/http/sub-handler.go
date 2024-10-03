@@ -32,7 +32,7 @@ func ArchiveUser(
 
 	view, err = getAndCacheUserProfile(pun, vault)
 
-	if err == nil {
+	if err == nil && !view.IsPrivate {
 		vault.CacheArchivedUserView.Schedule(view.Username, time.Duration(0), func() (model.ArchivedUserView, error) {
 			return getAndCacheUserProfile(view.Username, vault)
 		})

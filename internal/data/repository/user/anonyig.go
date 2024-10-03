@@ -48,7 +48,7 @@ func (r AnonyIGStoryUserRepository) Bio(username string) (model.Bio, error) {
 		avatarUrl = bio.User.HdProfilePicVersions[0].URL
 	}
 
-	return model.NewBio(username, bio.User.Biography, avatarUrl), nil
+	return model.NewBio(username, bio.User.Biography, avatarUrl, bio.User.IsPrivate), nil
 }
 
 func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory, error) {

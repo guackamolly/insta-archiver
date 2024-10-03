@@ -14,6 +14,7 @@ func (r FakeUserRepository) Bio(username string) (model.Bio, error) {
 		username,
 		"I have a really cool bio",
 		"https://fakeimg.pl/128x128/282828/eae0d0/?retina=1&text=%20%F0%9F%98%8B",
+		false,
 	), nil
 }
 
