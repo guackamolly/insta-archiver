@@ -56,6 +56,6 @@ func RegisterStaticFiles(e *echo.Echo) error {
 func ContentDir() [2]string {
 	return [2]string{
 		dirs[WithVirtualHost("/content")],
-		"/content/",
+		WithVirtualHost("/content/"),
 	}
 }
