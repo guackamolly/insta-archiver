@@ -3,6 +3,7 @@ package domain
 import (
 	"time"
 
+	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
@@ -15,31 +16,27 @@ type LoadCacheArchivedUserView struct {
 }
 
 type CacheArchivedUserView struct {
-	repository cache.CacheRepository[string, model.ArchivedUserView]
+	cacheRepo   cache.CacheRepository[string, model.ArchivedUserView]
+	archiveRepo archive.ArchiveRepository
 }
 
 type GetCachedArchivedUserView struct {
 	repository cache.CacheRepository[string, model.ArchivedUserView]
 }
 
-func (u LoadCacheArchivedUserView) Invoke() ([]cache.CacheEntry[model.ArchivedUserView], error) {
+func (u LoadCacheArchivedUserView) Invoke() error {
 	c, err := WrapResult0(u.repository.Load, LoadCacheFailed)
 
-	vs := make([]cache.CacheEntry[model.ArchivedUserView], len(c))
-
-	i := 0
-	for id, ce := range c {
+	for id := range c {
 		logging.LogInfo("loaded cache for user %s", id)
-		vs[i] = ce
 
-		i++
 	}
 
-	return vs, err
+	return err
 }
 
 func (u CacheArchivedUserView) Invoke(view model.ArchivedUserView) (model.ArchivedUserView, error) {
-	ce, err := u.repository.Update(view.Username, view)
+	ce, err := u.cacheRepo.Update(view.Username, view)
 
 	if err == nil {
 		return ce.Value, nil
@@ -48,21 +45,13 @@ func (u CacheArchivedUserView) Invoke(view model.ArchivedUserView) (model.Archiv
 	return view, model.Wrap(err, UpdateCacheFailed)
 }
 
-func (u CacheArchivedUserView) Schedule(username string, duration time.Duration, refresh func() (model.ArchivedUserView, error)) error {
+func (u CacheArchivedUserView) Schedule(username string, refresh func() (model.ArchivedUserView, error)) error {
 	if _, ok := cacheRefreshTimers[username]; ok {
 		logging.LogWarning("%s is already scheduled for refresh. skipping...", username)
 		return nil
 	}
 
-	if duration == 0 {
-		ce, err := u.repository.Lookup(username)
-
-		if err != nil {
-			return err
-		}
-
-		duration = ce.RefreshPolicy
-	}
+	duration := u.cacheRepo.Policy()
 
 	t := time.Tick(duration)
 	go func() {
@@ -85,7 +74,28 @@ func (u CacheArchivedUserView) Schedule(username string, duration time.Duration,
 	}()
 
 	cacheRefreshTimers[username] = t
-	logging.LogInfo("scheduled cache refresh with duration %s", duration)
+	logging.LogInfo("scheduled cache refresh for user %s with duration %s", username, duration)
+
+	return nil
+}
+
+func (u CacheArchivedUserView) ScheduleAll(
+	refresh func(username string) (model.ArchivedUserView, error),
+) error {
+	usernames, err := u.archiveRepo.All()
+	if err != nil {
+		return model.Wrap(err, ScheduleArchiveFailed)
+	}
+
+	for _, un := range usernames {
+		err = u.Schedule(un, func() (model.ArchivedUserView, error) {
+			return refresh(un)
+		})
+
+		if err != nil {
+			logging.LogError("failed to schedule archive for user %s. skipping until next hit", un)
+		}
+	}
 
 	return nil
 }

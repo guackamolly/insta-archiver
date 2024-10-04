@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/guackamolly/insta-archiver/internal/core"
 	client "github.com/guackamolly/insta-archiver/internal/data/client/http"
+	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
 	"github.com/guackamolly/insta-archiver/internal/data/storage"
@@ -52,16 +53,17 @@ func createVault(
 		logging.LogError("failed initializing file system storage... %v", err)
 	}
 
+	archiveRepo := archive.NewFileSystemArchiveRepository(contentStorage, client, virtualContentDir)
 	userRepo := user.NewAnonyIGStoryUserRepository(client)
 	cacheRepo := cache.NewFileSystemMemoryCacheRepository(contentStorage, storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]())
 
 	vault = core.Vault{
 		PurifyUsername:            domain.NewPurifyUsername(),
 		LoadCacheArchivedUserView: domain.NewLoadCacheArchivedUserView(cacheRepo),
-		CacheArchivedUserView:     domain.NewCacheArchivedUserView(cacheRepo),
+		CacheArchivedUserView:     domain.NewCacheArchivedUserView(archiveRepo, cacheRepo),
 		GetCachedArchivedUserView: domain.NewGetCachedArchivedUserView(cacheRepo),
-		GetUserProfile:            domain.NewGetUserProfile(userRepo),
-		DownloadUserProfile:       domain.NewDownloadUserProfile(client, contentStorage, physicalContentDir, virtualContentDir),
+		GetUserProfile:            domain.NewGetUserProfile(archiveRepo, userRepo),
+		DownloadUserProfile:       domain.NewDownloadUserProfile(archiveRepo),
 	}
 
 	return vault

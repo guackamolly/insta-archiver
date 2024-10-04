@@ -1,32 +1,27 @@
 package domain
 
 import (
-	"github.com/guackamolly/insta-archiver/internal/data/client/http"
+	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/cache"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/user"
-	"github.com/guackamolly/insta-archiver/internal/data/storage"
 	"github.com/guackamolly/insta-archiver/internal/model"
 )
 
 func NewGetUserProfile(
-	repo user.UserRepository,
+	archiveRepo archive.ArchiveRepository,
+	userRepo user.UserRepository,
 ) GetUserProfile {
 	return GetUserProfile{
-		userRepository: repo,
+		archiveRepository: archiveRepo,
+		userRepository:    userRepo,
 	}
 }
 
 func NewDownloadUserProfile(
-	client http.HttpClient,
-	storage *storage.FileSystemStorage,
-	physicalContentDir,
-	virtualContentDir string,
+	archiveRepo archive.ArchiveRepository,
 ) DownloadUserProfile {
 	return DownloadUserProfile{
-		client:             client,
-		physicalContentDir: physicalContentDir,
-		virtualContentDir:  virtualContentDir,
-		contentStorage:     storage,
+		archiveRepo: archiveRepo,
 	}
 }
 
@@ -43,10 +38,12 @@ func NewLoadCacheArchivedUserView(
 }
 
 func NewCacheArchivedUserView(
-	repository cache.CacheRepository[string, model.ArchivedUserView],
+	archiveRepo archive.ArchiveRepository,
+	cacheRepo cache.CacheRepository[string, model.ArchivedUserView],
 ) CacheArchivedUserView {
 	return CacheArchivedUserView{
-		repository: repository,
+		archiveRepo: archiveRepo,
+		cacheRepo:   cacheRepo,
 	}
 }
 

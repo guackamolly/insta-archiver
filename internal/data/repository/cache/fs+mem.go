@@ -135,3 +135,7 @@ func (r *FileSystemMemoryCacheRepository[V]) trySaveCache(id string, value Cache
 
 	return r.fs.StoreRaw(id, j)
 }
+
+func (r FileSystemMemoryCacheRepository[V]) Policy() time.Duration {
+	return r.cachePolicy
+}

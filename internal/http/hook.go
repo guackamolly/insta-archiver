@@ -1,8 +1,6 @@
 package http
 
 import (
-	"time"
-
 	"github.com/guackamolly/insta-archiver/internal/core"
 	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
@@ -10,18 +8,17 @@ import (
 )
 
 func BeforeStart(e *echo.Echo, v core.Vault) {
-	vs, err := v.LoadCacheArchivedUserView.Invoke()
+	err := v.LoadCacheArchivedUserView.Invoke()
 
 	if err != nil {
 		logging.LogError("failed loading cache %v", err)
-
-		return
 	}
 
-	for _, ce := range vs {
-		view := ce.Value
-		v.CacheArchivedUserView.Schedule(view.Username, time.Until(ce.NextHit), func() (model.ArchivedUserView, error) {
-			return getAndCacheUserProfile(view.Username, v)
-		})
+	err = v.CacheArchivedUserView.ScheduleAll(func(username string) (model.ArchivedUserView, error) {
+		return v.GetCachedArchivedUserView.Invoke(username)
+	})
+
+	if err != nil {
+		logging.LogError("failed scheduling archive cache %v", err)
 	}
 }

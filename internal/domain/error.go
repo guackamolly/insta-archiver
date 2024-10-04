@@ -17,4 +17,5 @@ const (
 	FetchStoriesFailed
 	ConvertStoriesFailed
 	ValidateUsernameFailed
+	ScheduleArchiveFailed
 )

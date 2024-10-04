@@ -68,12 +68,12 @@
                 </section>
                 {{end}}
 
-                {{range $date, $stories := .ArchivedStories}}
+                {{range $item := .ArchivedStories}}
                 <div class="divider"></div>
-                <h2>{{$date}}</h2>
+                <h2>{{$item.Date}}</h2>
                 <div class="divider"></div>
                 <section class="gallery">
-                    {{range $story := $stories}}
+                    {{range $story := $item.Stories}}
                     <a href="{{$story.Media}}">
                         <img lazy src="{{$story.Thumbnail}}"
                             alt="thumbnail of an old story published by user @{{$.Username}}" />

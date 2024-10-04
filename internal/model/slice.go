@@ -33,6 +33,20 @@ func Filter[T any](
 	return r
 }
 
+func Map[T any, R any](
+	values []T,
+	mapf func(T) R,
+) []R {
+	var r []R
+
+	for _, v := range values {
+		m := mapf(v)
+		r = append(r, m)
+	}
+
+	return r
+}
+
 func MapFilter[T any, M any](
 	values []T,
 	mapf func(T) (M, error),

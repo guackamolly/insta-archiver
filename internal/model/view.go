@@ -1,8 +1,15 @@
 package model
 
 import (
+	"slices"
+	"strings"
 	"time"
 )
+
+type archiveStoriesItem struct {
+	Date    string
+	Stories []Story[string]
+}
 
 type ArchivedUserView struct {
 	Username             string
@@ -10,7 +17,7 @@ type ArchivedUserView struct {
 	Avatar               string
 	IsPrivate            bool
 	LastStories          []Story[string]
-	ArchivedStories      map[string][]Story[string]
+	ArchivedStories      []archiveStoriesItem
 	ArchivedStoriesCount int
 }
 
@@ -28,13 +35,26 @@ func NewArchivedUserView(
 		delete(as, tk)
 	}
 
+	sas := make([]archiveStoriesItem, len(as))
+	i := 0
+	for k, v := range as {
+		sas[i] = archiveStoriesItem{
+			Date:    k,
+			Stories: v,
+		}
+		i++
+	}
+	slices.SortFunc(sas, func(x archiveStoriesItem, y archiveStoriesItem) int {
+		return -strings.Compare(x.Date, y.Date)
+	})
+
 	return ArchivedUserView{
 		Username:             profile.Bio.Username,
 		Description:          profile.Bio.Description,
 		Avatar:               profile.Bio.Avatar,
 		IsPrivate:            profile.Bio.IsPrivate,
 		LastStories:          ts,
-		ArchivedStories:      as,
+		ArchivedStories:      sas,
 		ArchivedStoriesCount: len(profile.Stories),
 	}
 }

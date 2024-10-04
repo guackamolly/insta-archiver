@@ -1,8 +1,6 @@
 package http
 
 import (
-	"time"
-
 	"github.com/guackamolly/insta-archiver/internal/core"
 	"github.com/guackamolly/insta-archiver/internal/logging"
 	"github.com/guackamolly/insta-archiver/internal/model"
@@ -33,7 +31,7 @@ func ArchiveUser(
 	view, err = getAndCacheUserProfile(pun, vault)
 
 	if err == nil && !view.IsPrivate {
-		vault.CacheArchivedUserView.Schedule(view.Username, time.Duration(0), func() (model.ArchivedUserView, error) {
+		vault.CacheArchivedUserView.Schedule(view.Username, func() (model.ArchivedUserView, error) {
 			return getAndCacheUserProfile(view.Username, vault)
 		})
 	}

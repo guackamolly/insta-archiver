@@ -45,6 +45,8 @@ type CacheRepository[I comparable, V any] interface {
 	Update(I, V) (CacheEntry[V], error)
 	// Evicts/deletes a cache entry.
 	Evict(I) error
+
+	Policy() time.Duration
 }
 
 func NewMemoryCacheRepository[V any](
