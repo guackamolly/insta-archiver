@@ -8,7 +8,12 @@ if [ ! -d "$tmp_dir" ]; then
     mkdir -p "$tmp_dir"
 fi
 
-docker run \
+daemon_flag=""
+if [ "$1" = '-d' ]; then
+    daemon_flag='-d'
+fi
+
+docker run $daemon_flag \
     -p $server_port:$server_port \
     --mount "type=bind,src=$tmp_dir,dst=/tmp" \
     --mount "type=bind,src=$server_public_root,dst=$server_public_root" \
