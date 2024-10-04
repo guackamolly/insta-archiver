@@ -5,4 +5,7 @@ docker_tag="$(cat build-docker | grep "docker_tag=" | cut -d "=" -f 2)"
 export $(grep -v '^#' .env | xargs)
 docker run \
     -p $server_port:$server_port \
+    --mount "type=bind,src=$tmp_dir,dst=/tmp" \
+    --mount "type=bind,src=$server_public_root,dst=$server_public_root" \
+    --env-file .env \
     -t $docker_tag

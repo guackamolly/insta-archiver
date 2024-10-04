@@ -8,13 +8,12 @@ RUN go mod download
 
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
-COPY web/ ./web/
 
-RUN GOOS=linux CGO_ENABLED=0 go build -o insta-archiver ./cmd/insta-archiver/insta-archiver.go
+RUN GOOS=linux CGO_ENABLED=0 go build -o insta-archiver ./cmd/web/web.go
 
 FROM scratch
 WORKDIR /app
 
 COPY --from=builder /app /app/
 
-CMD [ "/app/insta-archiver" ]
+CMD [ "/app/web" ]
