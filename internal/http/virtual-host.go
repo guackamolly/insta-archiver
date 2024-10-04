@@ -14,7 +14,7 @@ var (
 	serverVirtualHost = os.Getenv(serverVirtualHostEnvKey)
 )
 
-func init() {
+func WithVirtualHost(path string) string {
 	if !strings.HasPrefix(serverVirtualHost, "/") {
 		serverVirtualHost = "/" + serverVirtualHost
 	}
@@ -22,9 +22,7 @@ func init() {
 	if !strings.HasSuffix(serverVirtualHost, "/") {
 		serverVirtualHost = serverVirtualHost + "/"
 	}
-}
 
-func WithVirtualHost(path string) string {
 	if path == "" || path == "/" {
 		return serverVirtualHost
 	}
