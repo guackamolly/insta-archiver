@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [ -z $1 ]; then
+    echo -e "Please specify virtual host.\nExample: ./tools/update-virtual-host /insta-archiver/"
+    exit 1
+fi
+
+export $(grep -v '^#' .env | xargs)
+
+files=$(find "$server_public_root" -type f -name "*.html")
+for file in $files; do
+    sed -i "s#<base href=".*">#<base href='"$1"'>#g" "$file"
+done
