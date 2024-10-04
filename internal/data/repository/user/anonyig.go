@@ -103,13 +103,7 @@ func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory
 			media = video.URL
 		}
 
-		pdt, err := time.Parse(time.StampMilli, fmt.Sprintf("%d000", v.TakenAt))
-
-		if err != nil {
-			pdt = time.Now()
-		} else {
-			pdt = pdt.Add(time.Hour * 24)
-		}
+		pdt := time.UnixMilli(int64(v.TakenAt) * 1000)
 
 		res[i] = model.NewStory(
 			v.Pk,
