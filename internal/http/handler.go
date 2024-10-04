@@ -10,7 +10,7 @@ import (
 )
 
 func RegisterHandlers(e *echo.Echo) {
-	e.Any(rootRoute, anyRouteHandler)
+	e.GET(rootRoute, anyRouteHandler)
 	e.GET(archiveRoute, archiveRouteHandler)
 	e.HTTPErrorHandler = httpErrorHandler()
 }

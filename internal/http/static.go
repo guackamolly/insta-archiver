@@ -14,16 +14,16 @@ var (
 	serverPublicRoot = os.Getenv(serverPublicRootEnvKey)
 
 	files = map[string]string{
-		"/index.html":    serverPublicRoot + "index.html",
-		"/index.css":     serverPublicRoot + "index.css",
-		"/manifest.json": serverPublicRoot + "manifest.json",
+		WithVirtualHost("/index.html"):    serverPublicRoot + "index.html",
+		WithVirtualHost("/index.css"):     serverPublicRoot + "index.css",
+		WithVirtualHost("/manifest.json"): serverPublicRoot + "manifest.json",
 	}
 
 	dirs = map[string]string{
-		"/static":  serverPublicRoot + "static/",
-		"/content": serverPublicRoot + "content/",
-		"/about":   serverPublicRoot + "about/",
-		"/contact": serverPublicRoot + "contact/",
+		WithVirtualHost("/static"):  serverPublicRoot + "static/",
+		WithVirtualHost("/content"): serverPublicRoot + "content/",
+		WithVirtualHost("/about"):   serverPublicRoot + "about/",
+		WithVirtualHost("/contact"): serverPublicRoot + "contact/",
 	}
 
 	templates = []string{
@@ -34,7 +34,7 @@ var (
 		404: serverPublicRoot + "404/index.html",
 	}
 
-	root     = files["/index.html"]
+	root     = files[WithVirtualHost("/index.html")]
 	fallback = root
 )
 
@@ -55,7 +55,7 @@ func RegisterStaticFiles(e *echo.Echo) error {
 // [1] - Content directory that is accessible through the network (virtual)
 func ContentDir() [2]string {
 	return [2]string{
-		dirs["/content"],
+		dirs[WithVirtualHost("/content")],
 		"/content/",
 	}
 }

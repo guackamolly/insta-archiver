@@ -21,4 +21,10 @@ func BeforeStart(e *echo.Echo, v core.Vault) {
 	if err != nil {
 		logging.LogError("failed scheduling archive cache %v", err)
 	}
+
+	logging.LogInfo("Configured Routes:")
+	routes := e.Routes()
+	for _, r := range routes {
+		logging.LogInfo("%s %s", r.Method, r.Path)
+	}
 }

@@ -1,6 +1,6 @@
 package http
 
-const (
-	rootRoute    = "/"
-	archiveRoute = "/archive/:id"
+var (
+	rootRoute    = WithVirtualHost("/")
+	archiveRoute = WithVirtualHost("/archive/:id")
 )
