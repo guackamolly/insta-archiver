@@ -31,5 +31,9 @@ func WithVirtualHost(path string) string {
 		return path
 	}
 
+	if path[0] == '/' {
+		return fmt.Sprintf("%s%s", serverVirtualHost, path[1:])
+	}
+
 	return fmt.Sprintf("%s%s", serverVirtualHost, path)
 }
