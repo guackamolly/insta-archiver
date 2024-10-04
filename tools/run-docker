@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
-docker_tag="$(cat build-docker | grep "docker_tag=" | cut -d "=" -f 2)"
+pwd="$(dirname "$BASH_SOURCE")"
+docker_tag="$(cat $pwd/build-docker | grep "docker_tag=" | cut -d "=" -f 2)"
 
 export $(grep -v '^#' .env | xargs)
+if [ ! -d "$tmp_dir" ]; then
+    mkdir -p "$tmp_dir"
+fi
+
 docker run \
     -p $server_port:$server_port \
     --mount "type=bind,src=$tmp_dir,dst=/tmp" \

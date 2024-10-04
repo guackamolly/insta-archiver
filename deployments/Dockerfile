@@ -16,4 +16,4 @@ WORKDIR /app
 
 COPY --from=builder /app /app/
 
-CMD [ "/app/web" ]
+CMD [ "/app/insta-archiver" ]
