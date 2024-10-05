@@ -1,3 +1,5 @@
+@import url("static/fonts/index.css");
+
 :root {
     --red: #e78284;
     --white: #ffffff;
@@ -5,7 +7,7 @@
     --background: #f2d5cf53;
 
     background-color: var(--background);
-    font-family: 'JetBrainsMono Nerd Font' system-ui, -apple-system, BlinkMacSystemFont, segoe ui, Roboto, Oxygen, Ubuntu, Cantarell, open sans, helvetica neue, sans-serif;
+    font-family: 'JetBrains Mono' system-ui, -apple-system, BlinkMacSystemFont, segoe ui, Roboto, Oxygen, Ubuntu, Cantarell, open sans, helvetica neue, sans-serif;
 }
 
 header {
