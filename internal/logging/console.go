@@ -1,6 +1,9 @@
 package logging
 
-import console "fmt"
+import (
+	console "fmt"
+	"time"
+)
 
 type consoleLogger struct{}
 
@@ -24,7 +27,7 @@ func (l consoleLogger) Fatal(fmt string, s ...any) {
 }
 
 func (l consoleLogger) format(fmt string, s ...any) string {
-	return console.Sprintf(fmt, s...)
+	return console.Sprintf("%s - %s", time.Now().Format(time.TimeOnly), console.Sprintf(fmt, s...))
 }
 
 func NewConsoleLogger() Logger {
