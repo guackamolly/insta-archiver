@@ -55,6 +55,14 @@ func (u CacheArchivedUserView) Schedule(username string, refresh func() (model.A
 
 	t := time.Tick(duration)
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				delete(cacheRefreshTimers, username)
+				go func() {
+					u.Schedule(username, refresh)
+				}()
+			}
+		}()
 		for range t {
 			view, err := refresh()
 
