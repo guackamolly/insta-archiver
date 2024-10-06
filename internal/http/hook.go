@@ -15,7 +15,7 @@ func BeforeStart(e *echo.Echo, v core.Vault) {
 	}
 
 	err = v.CacheArchivedUserView.ScheduleAll(func(username string) (model.ArchivedUserView, error) {
-		return v.GetCachedArchivedUserView.Invoke(username)
+		return getAndCacheUserProfile(username, v)
 	})
 
 	if err != nil {
