@@ -14,10 +14,6 @@ type ViewIGStoryUserRepository struct {
 	client http.HttpClient
 }
 
-func (r ViewIGStoryUserRepository) Bio(username string) (model.Bio, error) {
-	return model.Bio{}, errors.New("not implemented yet")
-}
-
 func (r ViewIGStoryUserRepository) Stories(username string) ([]model.Story, error) {
 	var res []model.Story
 
@@ -61,6 +57,10 @@ func (r ViewIGStoryUserRepository) Stories(username string) ([]model.Story, erro
 	}
 
 	return res, err
+}
+
+func (r ViewIGStoryUserRepository) Bio(username string) (model.Bio, error) {
+	return model.Bio{}, errors.New("not implemented yet")
 }
 
 // Structure of a successful JSON response from ViewIGStory API.

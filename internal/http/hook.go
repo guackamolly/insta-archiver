@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Runs before starting the server
 func BeforeStart(e *echo.Echo, v core.Vault) {
 	err := v.LoadCacheArchivedUserView.Invoke()
 
