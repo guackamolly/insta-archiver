@@ -8,7 +8,7 @@ import (
 
 type archiveStoriesItem struct {
 	Date    string
-	Stories []Story[string]
+	Stories []Story
 }
 
 type ArchivedUserView struct {
@@ -16,7 +16,7 @@ type ArchivedUserView struct {
 	Description          string
 	Avatar               string
 	IsPrivate            bool
-	LastStories          []Story[string]
+	LastStories          []Story
 	ArchivedStories      []archiveStoriesItem
 	ArchivedStoriesCount int
 }
@@ -24,7 +24,7 @@ type ArchivedUserView struct {
 func NewArchivedUserView(
 	profile Profile,
 ) ArchivedUserView {
-	as := GroupBy(profile.Stories, func(s CloudStory) string {
+	as := GroupBy(profile.Stories, func(s Story) string {
 		return s.PublishedOn.Format(time.DateOnly)
 	})
 

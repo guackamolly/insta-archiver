@@ -2,12 +2,12 @@ package model
 
 type Profile struct {
 	Bio     Bio
-	Stories []Story[string]
+	Stories []Story
 }
 
 func NewProfile(
 	bio Bio,
-	stories []Story[string],
+	stories []Story,
 ) Profile {
 	return Profile{
 		Bio:     bio,

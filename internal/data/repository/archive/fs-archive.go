@@ -34,7 +34,7 @@ func (r FileSystemArchiveRepository) All() ([]string, error) {
 	), nil
 }
 
-func (r FileSystemArchiveRepository) Stories(username string) ([]model.CloudStory, error) {
+func (r FileSystemArchiveRepository) Stories(username string) ([]model.Story, error) {
 	fs, err := r.storage.Lookup(username)
 
 	if err != nil {
@@ -43,8 +43,8 @@ func (r FileSystemArchiveRepository) Stories(username string) ([]model.CloudStor
 
 	return model.MapFilter(
 		fs,
-		func(f storage.File) (model.CloudStory, error) {
-			var s model.CloudStory
+		func(f storage.File) (model.Story, error) {
+			var s model.Story
 
 			bs, err := os.ReadFile(f.Path)
 
@@ -88,7 +88,7 @@ func (r FileSystemArchiveRepository) Archive(profile model.Profile) (model.Profi
 	), nil
 }
 
-func (r FileSystemArchiveRepository) downloadStories(profile model.Profile, alreadyDownloadedContent []storage.File, path string) ([]model.Story[string], error) {
+func (r FileSystemArchiveRepository) downloadStories(profile model.Profile, alreadyDownloadedContent []storage.File, path string) ([]model.Story, error) {
 	stories := profile.Stories
 
 	for i, v := range stories {
@@ -105,7 +105,7 @@ func (r FileSystemArchiveRepository) downloadStories(profile model.Profile, alre
 				continue
 			}
 
-			var s model.CloudStory
+			var s model.Story
 
 			bs, err := os.ReadFile(dat.Path)
 

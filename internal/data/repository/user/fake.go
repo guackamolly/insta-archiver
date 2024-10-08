@@ -18,8 +18,8 @@ func (r FakeUserRepository) Bio(username string) (model.Bio, error) {
 	), nil
 }
 
-func (r FakeUserRepository) Stories(username string) ([]model.CloudStory, error) {
-	return []model.CloudStory{
+func (r FakeUserRepository) Stories(username string) ([]model.Story, error) {
+	return []model.Story{
 		model.NewStory(
 			"00001",
 			username,

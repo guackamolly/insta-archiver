@@ -8,7 +8,7 @@ import (
 // Operations the application is able to do in regards to an Instagram user.
 type UserRepository interface {
 	Bio(username string) (model.Bio, error)
-	Stories(username string) ([]model.CloudStory, error)
+	Stories(username string) ([]model.Story, error)
 }
 
 func NewViewIGStoryUserRepository(

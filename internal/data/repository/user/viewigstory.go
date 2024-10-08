@@ -18,8 +18,8 @@ func (r ViewIGStoryUserRepository) Bio(username string) (model.Bio, error) {
 	return model.Bio{}, errors.New("not implemented yet")
 }
 
-func (r ViewIGStoryUserRepository) Stories(username string) ([]model.CloudStory, error) {
-	var res []model.CloudStory
+func (r ViewIGStoryUserRepository) Stories(username string) ([]model.Story, error) {
+	var res []model.Story
 
 	u := fmt.Sprintf("https://viewigstory.com/api/stories/%s", username)
 	resp, err := r.client.Do(
@@ -42,7 +42,7 @@ func (r ViewIGStoryUserRepository) Stories(username string) ([]model.CloudStory,
 		return res, err
 	}
 
-	res = make([]model.CloudStory, len(stories.LastStories))
+	res = make([]model.Story, len(stories.LastStories))
 	for i, v := range stories.LastStories {
 		pdt, err := time.Parse(time.DateOnly, v.CreatedTime)
 

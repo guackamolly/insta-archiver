@@ -51,8 +51,8 @@ func (r AnonyIGStoryUserRepository) Bio(username string) (model.Bio, error) {
 	return model.NewBio(username, bio.User.Biography, avatarUrl, bio.User.IsPrivate), nil
 }
 
-func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory, error) {
-	var res []model.CloudStory
+func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.Story, error) {
+	var res []model.Story
 
 	u := "https://anonyig.com/api/ig/story"
 	resp, err := r.client.Do(
@@ -75,7 +75,7 @@ func (r AnonyIGStoryUserRepository) Stories(username string) ([]model.CloudStory
 
 	stories := body.Result
 
-	res = make([]model.CloudStory, len(stories))
+	res = make([]model.Story, len(stories))
 	for i, v := range stories {
 		if len(v.ImageVersions2.Candidates) == 0 {
 			continue

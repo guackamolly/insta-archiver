@@ -8,7 +8,7 @@ import (
 
 type ArchiveRepository interface {
 	All() ([]string, error)
-	Stories(username string) ([]model.Story[string], error)
+	Stories(username string) ([]model.Story, error)
 	Archive(profile model.Profile) (model.Profile, error)
 }
 
