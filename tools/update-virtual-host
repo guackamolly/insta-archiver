@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -z $1 ]; then
-    echo -e "Please specify virtual host.\nExample: ./tools/update-virtual-host /insta-archiver/"
-    exit 1
-fi
-
 export $(grep -v '^#' .env | xargs)
+
+if [ -z $server_virtual_host ]; then
+    echo -e "Variable server_virtual_host is not set.\nPlease configure it on the .env file."
+fi
 
 files=$(find "$server_public_root" -type f -name "*.html")
 for file in $files; do
-    sed -i "s#<base href=".*">#<base href='"$1"'>#g" "$file"
+    sed -i "s#<base href=".*">#<base href='"$server_public_root"'>#g" "$file"
 done
