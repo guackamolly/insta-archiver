@@ -7,6 +7,7 @@ Then, all you need to do is to run the service with the following command:
 ```bash
 go run cmd/web/web.go
 ```
+
 ## Docker
 
 To build the image:
@@ -15,8 +16,16 @@ To build the image:
 ./tools/build-docker
 ```
 
-To run the container:
+To run the container (include -d if running as daemon):
 
 ```bash
 ./tools/run-docker
+```
+
+## Virtual Host
+
+If you're deploying the service as a virtual host, first run the script to update the webpages relative urls.
+
+```bash
+./tool/update-virtual-host
 ```
