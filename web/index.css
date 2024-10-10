@@ -2,6 +2,7 @@
 
 :root {
     --red: #e78284;
+    --redish: #e73a40;
     --white: #ffffff;
     --border: #ccc;
     --background: #f2d5cf53;
@@ -200,4 +201,27 @@ span {
     .gallery>a {
         width: 100%;
     }
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.logo-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-decoration: none;
+    color: currentColor;
+    gap: 12px;
+}
+
+.logo-text {
+    font-size: small;
+    color: var(--redish);
+    text-decoration: none;
+    margin-bottom: 8px;
+
 }
