@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/guackamolly/insta-archiver/internal/core"
 	client "github.com/guackamolly/insta-archiver/internal/data/client/http"
 	"github.com/guackamolly/insta-archiver/internal/data/repository/archive"
@@ -25,7 +27,7 @@ func main() {
 
 	// Initialize di container
 	contentDir := http.ContentDir()
-	vault := createVault(contentDir[0], contentDir[1])
+	vault := createVault(contentDir[0], contentDir[1], os.Getenv("cdn_url"))
 
 	// Register server dependencies
 	http.RegisterHandlers(e)
@@ -43,6 +45,7 @@ func main() {
 func createVault(
 	physicalContentDir,
 	virtualContentDir string,
+	cdnUrl string,
 ) core.Vault {
 	var vault core.Vault
 
@@ -53,7 +56,13 @@ func createVault(
 		logging.LogError("failed initializing file system storage... %v", err)
 	}
 
-	archiveRepo := archive.NewFileSystemArchiveRepository(contentStorage, client, virtualContentDir)
+	var archiveRepo archive.ArchiveRepository
+	if cdnUrl != "" {
+		archiveRepo = archive.NewFileSystemCDNArchiveRepository(contentStorage, client, cdnUrl)
+	} else {
+		archiveRepo = archive.NewFileSystemArchiveRepository(contentStorage, client, virtualContentDir)
+	}
+
 	userRepo := user.NewAnonyIGStoryUserRepository(client)
 	cacheRepo := cache.NewFileSystemMemoryCacheRepository(contentStorage, storage.NewMemoryStorage[string, cache.CacheEntry[model.ArchivedUserView]]())
 
