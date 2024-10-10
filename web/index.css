@@ -223,5 +223,8 @@ span {
     color: var(--redish);
     text-decoration: none;
     margin-bottom: 8px;
+}
 
+.youtube-video>img {
+    max-width: 100%;
 }
