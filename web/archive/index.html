@@ -76,7 +76,7 @@
                 <section class="gallery">
                     {{range $story := $item.Stories}}
                     <a href="{{$story.Media}}">
-                        <img lazy src="{{$story.Thumbnail}}"
+                        <img loading="lazy" src="{{$story.Thumbnail}}"
                             alt="thumbnail of an old story published by user @{{$.Username}}" />
                         {{end}}
                     </a>
