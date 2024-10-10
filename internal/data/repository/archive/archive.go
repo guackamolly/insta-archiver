@@ -23,3 +23,15 @@ func NewFileSystemArchiveRepository(
 		virtualContentDir: virtualContentDir,
 	}
 }
+
+func NewFileSystemCDNArchiveRepository(
+	storage *storage.FileSystemStorage,
+	client http.HttpClient,
+	cdnUrl string,
+) ArchiveRepository {
+	return FileSystemCDNArchiveRepository{
+		storage: storage,
+		client:  client,
+		cdnUrl:  cdnUrl,
+	}
+}
