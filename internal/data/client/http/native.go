@@ -38,6 +38,7 @@ func (c nativeHttpClient) Do(req HttpRequest) (HttpResponse, error) {
 		StatusCode: nresp.StatusCode,
 		Headers:    nresp.Header,
 		Body:       HttpBody{read: nresp.Body},
+		RequestURL: nresp.Request.URL.String(),
 	}
 
 	return resp, err

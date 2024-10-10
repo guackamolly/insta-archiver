@@ -8,6 +8,7 @@ type HttpResponse struct {
 	StatusCode int
 	Body       HttpBody
 	Headers    http.Header
+	RequestURL string
 }
 
 func (r HttpResponse) Ok() bool {
