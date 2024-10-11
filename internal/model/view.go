@@ -24,7 +24,12 @@ type ArchivedUserView struct {
 func NewArchivedUserView(
 	profile Profile,
 ) ArchivedUserView {
-	as := GroupBy(profile.Stories, func(s Story) string {
+	ss := profile.Stories
+	slices.SortFunc(ss, func(x Story, y Story) int {
+		return -x.PublishedOn.Compare(y.PublishedOn)
+	})
+
+	as := GroupBy(ss, func(s Story) string {
 		return s.PublishedOn.Format(time.DateOnly)
 	})
 
@@ -55,6 +60,6 @@ func NewArchivedUserView(
 		IsPrivate:            profile.Bio.IsPrivate,
 		LastStories:          ts,
 		ArchivedStories:      sas,
-		ArchivedStoriesCount: len(profile.Stories),
+		ArchivedStoriesCount: len(ss),
 	}
 }
