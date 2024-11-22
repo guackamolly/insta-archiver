@@ -37,6 +37,9 @@ func Typed[T interface{}](b *HttpBody) (T, error) {
 	}
 
 	err = json.Unmarshal(r, &res)
+	if err != nil {
+		println(string(r))
+	}
 
 	return res, err
 }
